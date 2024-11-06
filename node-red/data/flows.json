@@ -1,0 +1,5779 @@
+[
+    {
+        "id": "2a9722bcf1119b04",
+        "type": "tab",
+        "label": "WO",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "dfb0f8c282e0d8d5",
+        "type": "tab",
+        "label": "OP",
+        "disabled": true,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "097caf162b0c901b",
+        "type": "tab",
+        "label": "item",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "4219ae6419dd9dfd",
+        "type": "tab",
+        "label": "Workstation",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "ac8cbfc01e36b300",
+        "type": "tab",
+        "label": "CSV Import",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "d9ca7fa55a92d921",
+        "type": "tab",
+        "label": "Test",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "c01207d401bae1df",
+        "type": "tab",
+        "label": "GET /workstation/op/:id",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "ad618680ddb90735",
+        "type": "tab",
+        "label": "GET /wo",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "97492bb7d660d951",
+        "type": "tab",
+        "label": "POST /run/create",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "58a7b027e50b089e",
+        "type": "tab",
+        "label": "GET /wo/:id",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "9fa36512b664b791",
+        "type": "graphql-server",
+        "name": "postgraphile",
+        "endpoint": "http://graphile:5999/graphql",
+        "token": ""
+    },
+    {
+        "id": "cffb28fa7aee20af",
+        "type": "ignition-server",
+        "hostname": "172.19.0.1",
+        "port": "8088",
+        "ssl": false,
+        "tls": "",
+        "defaultTagProvider": "edge",
+        "name": "nodered1"
+    },
+    {
+        "id": "1530c31a0f0ec74c",
+        "type": "http in",
+        "z": "2a9722bcf1119b04",
+        "name": "POST /wo/sync body={wo:\"abc\"}",
+        "url": "/wo/sync",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 380,
+        "wires": [
+            [
+                "526bdd6504939ab5",
+                "ae5a5ef410d10923"
+            ]
+        ]
+    },
+    {
+        "id": "2bf7fc135fe03972",
+        "type": "http request",
+        "z": "2a9722bcf1119b04",
+        "name": "Workstations",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [
+            {
+                "keyType": "Authorization",
+                "keyValue": "",
+                "valueType": "other",
+                "valueValue": "${ERP_AUTH}"
+            }
+        ],
+        "x": 1070,
+        "y": 380,
+        "wires": [
+            [
+                "1cac5ebd967fc9e1"
+            ]
+        ]
+    },
+    {
+        "id": "3d43875a79adb2b2",
+        "type": "http request",
+        "z": "2a9722bcf1119b04",
+        "name": "Work Order Request",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://172.19.0.1:8080/api/resource/Work%20Order/{{{wo}}}",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [
+            {
+                "keyType": "Authorization",
+                "keyValue": "",
+                "valueType": "other",
+                "valueValue": "${ERP_AUTH}"
+            }
+        ],
+        "x": 540,
+        "y": 380,
+        "wires": [
+            [
+                "606c11d0df3bb819"
+            ]
+        ]
+    },
+    {
+        "id": "606c11d0df3bb819",
+        "type": "json",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 710,
+        "y": 380,
+        "wires": [
+            [
+                "353dfcd9356081e6"
+            ]
+        ]
+    },
+    {
+        "id": "353dfcd9356081e6",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "req",
+                "pt": "msg",
+                "to": "payload.data",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "wo",
+                "pt": "msg",
+                "to": "payload.data.{\t    \"id\":name,\t    \"asm\": production_item,\t    \"bom\": bom_no,\t    \"qty\": qty,\t    \"operating_cost\": planned_operating_cost,\t    \"bom_cost\": $sum(required_items.amount),\t    \"total_cost\": planned_operating_cost + $sum(required_items.amount),\t    \"items\": required_items.{\t        \"id\": item_name,\t        \"qty\": required_qty/%.qty,\t        \"total_qty\": required_qty,\t        \"rate\": rate,\t        \"amount\": amount\t    },\t    \"operations\": operations.{\t        \"id\": operation,\t        \"status\": status,\t        \"workstation\":workstation,\t        \"workstation_type\": workstation_type,\t        \"sequence\": sequence_id,\t        \"rate\": hour_rate,\t        \"time\": time_in_mins,\t        \"planned_cost\": planned_operating_cost\t    }\t}",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "url",
+                "pt": "msg",
+                "to": "(\t    $f := [\t        \"name\",\t        \"owner\",\t        \"creation\",\t        \"modified\",\t        \"modified_by\",\t        \"docstatus\",\t        \"idx\",\t        \"workstation_name\",\t        \"workstation_type\",\t        \"production_capacity\",\t        \"status\",\t        \"hour_rate_electricity\",\t        \"hour_rate_consumable\",\t        \"hour_rate_rent\",\t        \"hour_rate_labour\",\t        \"hour_rate\",\t        \"total_working_hours\",\t        \"doctype\"\t    ];\t    $of := payload.operations.([\"name\",\"=\", workstation]) ~> $string;\t    $url := $encodeUrl(\"http://172.19.0.1:8080/api/resource/Workstation?or_filters=\" & $of & \"&fields=\" & $f)\t)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 900,
+        "y": 380,
+        "wires": [
+            [
+                "2bf7fc135fe03972"
+            ]
+        ]
+    },
+    {
+        "id": "1cac5ebd967fc9e1",
+        "type": "json",
+        "z": "2a9722bcf1119b04",
+        "name": "parse json",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 1230,
+        "y": 380,
+        "wires": [
+            [
+                "5323255136f929db"
+            ]
+        ]
+    },
+    {
+        "id": "5323255136f929db",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "[payload.data.{\t    \"workstation\": {\t        \"id\": name,\t        \"externalId\": name,\t\t        \"name\": name,\t        \"workstationTypeId\": workstation_type, \t        \"description\": \"\",\t        \"laborCost\": $string(hour_rate_labor),\t        \"overheadCost\": $string(hour_rate - hour_rate_labor),\t        \"ext\": $\t    }\t}]",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 520,
+        "y": 480,
+        "wires": [
+            [
+                "b03e945cb41adc3f"
+            ]
+        ]
+    },
+    {
+        "id": "b03e945cb41adc3f",
+        "type": "split",
+        "z": "2a9722bcf1119b04",
+        "name": "split workstations",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "property": "payload",
+        "x": 730,
+        "y": 480,
+        "wires": [
+            [
+                "03d9f99b94722a5e"
+            ]
+        ]
+    },
+    {
+        "id": "45e1995367aa6554",
+        "type": "graphql",
+        "z": "2a9722bcf1119b04",
+        "name": "upsert workstations",
+        "graphql": "9fa36512b664b791",
+        "format": "text",
+        "template": "mutation($ws:UpsertWorkstationInput!){\n  upsertWorkstation(input:$ws){\n    workstation{id}\n  }\n}",
+        "syntax": "plain",
+        "token": "",
+        "showDebug": false,
+        "x": 1190,
+        "y": 480,
+        "wires": [
+            [
+                "3d10ef50d7399313"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "03d9f99b94722a5e",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "variables",
+                "pt": "msg",
+                "to": "{\"ws\":payload}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 970,
+        "y": 480,
+        "wires": [
+            [
+                "45e1995367aa6554"
+            ]
+        ]
+    },
+    {
+        "id": "3d10ef50d7399313",
+        "type": "join",
+        "z": "2a9722bcf1119b04",
+        "name": "join workstations",
+        "mode": "custom",
+        "build": "array",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "payload",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "useparts": false,
+        "accumulate": false,
+        "timeout": "1",
+        "count": "",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 1420,
+        "y": 480,
+        "wires": [
+            [
+                "59eeb0dd38f0949a"
+            ]
+        ]
+    },
+    {
+        "id": "3da6524941468503",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "bom",
+                "pt": "msg",
+                "to": "wo.bom",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 510,
+        "y": 560,
+        "wires": [
+            [
+                "1bd1af139d50d690"
+            ]
+        ]
+    },
+    {
+        "id": "1bd1af139d50d690",
+        "type": "http request",
+        "z": "2a9722bcf1119b04",
+        "name": "BOM Request",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://172.19.0.1:8080/api/resource/BOM/{{{bom}}}",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [
+            {
+                "keyType": "Authorization",
+                "keyValue": "",
+                "valueType": "other",
+                "valueValue": "${ERP_AUTH}"
+            }
+        ],
+        "x": 720,
+        "y": 560,
+        "wires": [
+            [
+                "8dfbd532e5d9c205"
+            ]
+        ]
+    },
+    {
+        "id": "e90a5ddb6e186d36",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "bom",
+                "pt": "msg",
+                "to": "payload.data",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "variables",
+                "pt": "msg",
+                "to": "payload.data.{\t    \"r\":{\t        \"routing\": {\t            \"id\": routing,\t            \"externalId\": routing,\t            \"code\": routing,\t            \"description\":\"\",\t            \"ext\": $\t        }   \t    }\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1180,
+        "y": 560,
+        "wires": [
+            [
+                "9ce69fa7d41ac587"
+            ]
+        ]
+    },
+    {
+        "id": "8dfbd532e5d9c205",
+        "type": "json",
+        "z": "2a9722bcf1119b04",
+        "name": "parse json",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 950,
+        "y": 560,
+        "wires": [
+            [
+                "e90a5ddb6e186d36"
+            ]
+        ]
+    },
+    {
+        "id": "9ce69fa7d41ac587",
+        "type": "graphql",
+        "z": "2a9722bcf1119b04",
+        "name": "upsert routing",
+        "graphql": "9fa36512b664b791",
+        "format": "text",
+        "template": "mutation($r:UpsertRoutingInput!){\n  upsertRouting(input:$r){\n    routing{id}\n  }\n}",
+        "syntax": "plain",
+        "token": "",
+        "showDebug": false,
+        "x": 1420,
+        "y": 560,
+        "wires": [
+            [
+                "1fe718a6276b52f9"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "1fe718a6276b52f9",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "(\t    \t    $b := bom;\t    $w := req.operations;\t    \t        [$b.operations.(\t            $sid := sequence_id;\t            $wo_op := $w[sequence_id=$sid];\t            {\t                \"operation\": {\t                    \"id\":name,\t                    \"code\": operation,\t                    \"externalId\": name,\t                    \"routingId\": $b.routing,\t                    \"operatorTypeId\": 0,\t                    \"rate\": 60/time_in_mins,\t                    \"cycleTime\": time_in_mins * 60000,\t                    \"sequenceNumber\": sequence_id,\t                    \"description\": \"\",\t                    \"setupTime\": 0,\t                    \"workstationId\": $wo_op.workstation,\t                    \"ext\": $merge([$,{\"wo\":$wo_op}])\t                }   \t            }\t        )]  \t    \t)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 520,
+        "y": 640,
+        "wires": [
+            [
+                "dc63101b1972ed78"
+            ]
+        ]
+    },
+    {
+        "id": "87537859e87dd663",
+        "type": "graphql",
+        "z": "2a9722bcf1119b04",
+        "name": "upsert operation",
+        "graphql": "9fa36512b664b791",
+        "format": "text",
+        "template": "mutation($op:UpsertOperationInput!){\n  upsertOperation(input:$op){\n    operation{id}\n  }\n}",
+        "syntax": "plain",
+        "token": "",
+        "showDebug": false,
+        "x": 1200,
+        "y": 640,
+        "wires": [
+            [
+                "4e7e1cc76e41a62f"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "dc63101b1972ed78",
+        "type": "split",
+        "z": "2a9722bcf1119b04",
+        "name": "split operations",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "property": "payload",
+        "x": 720,
+        "y": 640,
+        "wires": [
+            [
+                "92fe56e7f50ed8d8"
+            ]
+        ]
+    },
+    {
+        "id": "92fe56e7f50ed8d8",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "variables",
+                "pt": "msg",
+                "to": "{\"op\":payload}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 970,
+        "y": 640,
+        "wires": [
+            [
+                "87537859e87dd663"
+            ]
+        ]
+    },
+    {
+        "id": "4e7e1cc76e41a62f",
+        "type": "join",
+        "z": "2a9722bcf1119b04",
+        "name": "join operations",
+        "mode": "custom",
+        "build": "array",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "payload",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "useparts": false,
+        "accumulate": false,
+        "timeout": "1",
+        "count": "",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 1440,
+        "y": 640,
+        "wires": [
+            [
+                "75b8fd7f04dd2825"
+            ]
+        ]
+    },
+    {
+        "id": "75b8fd7f04dd2825",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "variables",
+                "pt": "msg",
+                "to": "bom.{\t    \"b\":{\t        \"bom\": {\t            \"id\": name,\t            \"externalId\": name,\t            \"itemId\": item,\t            \"description\":\"\",\t            \"routingId\": routing,\t            \"effectiveDate\": creation,\t            \"ext\": $\t        }   \t    }\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 530,
+        "y": 720,
+        "wires": [
+            [
+                "eb0bdeefa1414674"
+            ]
+        ]
+    },
+    {
+        "id": "eb0bdeefa1414674",
+        "type": "graphql",
+        "z": "2a9722bcf1119b04",
+        "name": "upsert bom",
+        "graphql": "9fa36512b664b791",
+        "format": "text",
+        "template": "mutation($b:UpsertBomInput!){\n  upsertBom(input:$b){\n    bom{id}\n  }\n}",
+        "syntax": "plain",
+        "token": "",
+        "showDebug": false,
+        "x": 730,
+        "y": 720,
+        "wires": [
+            [
+                "17f4af3e6453dfba"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "17f4af3e6453dfba",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "( \t    $b := bom;\t    \t    [$b.items.(\t        $op := operation;\t        $opid := $b.operations[operation=$op].name;\t        {\t            \"bomComponent\": {\t                \"id\":name,\t                \"externalId\": name,\t                \"bomId\": $b.name,\t                \"itemId\": item_name,\t                \"operationId\": $opid,\t                \"quantity\": qty,\t                \"ext\": $\t            }   \t        }   \t    )] \t)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 520,
+        "y": 800,
+        "wires": [
+            [
+                "cc84ab51f979e1c4"
+            ]
+        ]
+    },
+    {
+        "id": "cc84ab51f979e1c4",
+        "type": "split",
+        "z": "2a9722bcf1119b04",
+        "name": "split bom components",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "property": "payload",
+        "x": 740,
+        "y": 800,
+        "wires": [
+            [
+                "92818c8ba23b9264"
+            ]
+        ]
+    },
+    {
+        "id": "92818c8ba23b9264",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "variables",
+                "pt": "msg",
+                "to": "{\"b\":payload}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 970,
+        "y": 800,
+        "wires": [
+            [
+                "25d092d4bc899b14"
+            ]
+        ]
+    },
+    {
+        "id": "25d092d4bc899b14",
+        "type": "graphql",
+        "z": "2a9722bcf1119b04",
+        "name": "upsert bom components",
+        "graphql": "9fa36512b664b791",
+        "format": "text",
+        "template": "mutation($b:UpsertBomComponentInput!){\n  upsertBomComponent(input:$b){\n    bomComponent{id}\n  }\n}",
+        "syntax": "plain",
+        "token": "",
+        "showDebug": false,
+        "x": 1210,
+        "y": 800,
+        "wires": [
+            [
+                "6a4fd47e21bb1b08"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "6a4fd47e21bb1b08",
+        "type": "join",
+        "z": "2a9722bcf1119b04",
+        "name": "join bom components",
+        "mode": "custom",
+        "build": "array",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "payload",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "useparts": false,
+        "accumulate": false,
+        "timeout": "1",
+        "count": "",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 1460,
+        "y": 800,
+        "wires": [
+            [
+                "e85b42d205f220a8"
+            ]
+        ]
+    },
+    {
+        "id": "e85b42d205f220a8",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "variables",
+                "pt": "msg",
+                "to": "(\t    $b := bom;\t    req.{\t    \"wo\":{\t        \"workOrder\": {\t            \"id\": name,\t            \"externalId\": name,\t            \"itemId\": item_name,\t            \"bomId\": bom_no,\t            \"routingId\":$b.routing,\t            \"quantity\": qty,\t            \"plannedStartDate\": planned_start_date,\t            \"plannedEndDate\": $fromMillis($toMillis($moment(planned_start_date).toISOString()) + $sum(operations.time_in_mins)*60000),\t            \"status\": status=\"Draft\" ? \"planned\" \t                : status=\"Not Started\" ? \"planned\"\t                : status=\"Pending\" ? \"released\" \t                : status=\"Work In Progress\" ? \"started\"\t                : status=\"In Process\" ? \"started\"\t                : status=\"Cancelled\" ? \"cancelled\"\t                : \"completed\",\t            \"ext\": $\t        }   \t    }\t}\t)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 510,
+        "y": 880,
+        "wires": [
+            [
+                "2663e1f04c26f1a0"
+            ]
+        ]
+    },
+    {
+        "id": "2663e1f04c26f1a0",
+        "type": "graphql",
+        "z": "2a9722bcf1119b04",
+        "name": "upsert work order",
+        "graphql": "9fa36512b664b791",
+        "format": "text",
+        "template": "mutation($wo:UpsertWorkOrderInput!){\n  upsertWorkOrder(input:$wo){\n    workOrder{id}\n  }\n}",
+        "syntax": "plain",
+        "token": "",
+        "showDebug": false,
+        "x": 730,
+        "y": 880,
+        "wires": [
+            [
+                "05ddd11b69e41314"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "526bdd6504939ab5",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "set auth/wo",
+        "rules": [
+            {
+                "t": "set",
+                "p": "wo",
+                "pt": "msg",
+                "to": "req.body.wo",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 350,
+        "y": 380,
+        "wires": [
+            [
+                "3d43875a79adb2b2"
+            ]
+        ]
+    },
+    {
+        "id": "05ddd11b69e41314",
+        "type": "http response",
+        "z": "2a9722bcf1119b04",
+        "name": "response",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1700,
+        "y": 880,
+        "wires": []
+    },
+    {
+        "id": "d8d58bdfcc3d23aa",
+        "type": "http response",
+        "z": "2a9722bcf1119b04",
+        "name": "response",
+        "statusCode": "200",
+        "headers": {},
+        "x": 2440,
+        "y": 1100,
+        "wires": []
+    },
+    {
+        "id": "f7da3ea95b08d4fc",
+        "type": "http in",
+        "z": "2a9722bcf1119b04",
+        "name": "POST /run/start body={op:1}",
+        "url": "/run/start",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 1180,
+        "wires": [
+            [
+                "6a51dc1127194792"
+            ]
+        ]
+    },
+    {
+        "id": "6a51dc1127194792",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "set var/req",
+        "rules": [
+            {
+                "t": "set",
+                "p": "req",
+                "pt": "flow",
+                "to": "req",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "variables",
+                "pt": "msg",
+                "to": "{\t    \"op\":req.body.op\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 390,
+        "y": 1180,
+        "wires": [
+            [
+                "2a136755eed09804"
+            ]
+        ]
+    },
+    {
+        "id": "2a136755eed09804",
+        "type": "graphql",
+        "z": "2a9722bcf1119b04",
+        "name": "query op",
+        "graphql": "9fa36512b664b791",
+        "format": "text",
+        "template": "query op($op:String!){\n  runOperation(id:$op){\n    id\n    code\n    workstationId\n    plannedCost\n    quantity\n    rate\n    actualQuantity\n    actualStartDate\n    sequenceNumber\n    run {\n      id\n      workOrderId\n      \n    }\n    ext\n  }\n}",
+        "syntax": "plain",
+        "token": "",
+        "showDebug": false,
+        "x": 580,
+        "y": 1180,
+        "wires": [
+            [
+                "0b1aa802d07e6480"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "0b1aa802d07e6480",
+        "type": "switch",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "property": "payload.data.runOperation.actualStartDate",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "nnull"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 650,
+        "y": 1260,
+        "wires": [
+            [
+                "39fa1608671b0ec0"
+            ],
+            [
+                "8f107ea7e050c372"
+            ]
+        ]
+    },
+    {
+        "id": "39fa1608671b0ec0",
+        "type": "http response",
+        "z": "2a9722bcf1119b04",
+        "name": "response (not found)",
+        "statusCode": "400",
+        "headers": {},
+        "x": 960,
+        "y": 1180,
+        "wires": []
+    },
+    {
+        "id": "8f107ea7e050c372",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "set op/tagpath",
+        "rules": [
+            {
+                "t": "set",
+                "p": "op",
+                "pt": "flow",
+                "to": "payload.data.runOperation",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t\t\"tagPath\": \"[default]Workstation/\" & payload.data.runOperation.workstationId\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 900,
+        "y": 1240,
+        "wires": [
+            [
+                "046b495166033a11"
+            ]
+        ]
+    },
+    {
+        "id": "046b495166033a11",
+        "type": "ignition-tag-read",
+        "z": "2a9722bcf1119b04",
+        "server": "cffb28fa7aee20af",
+        "value": "",
+        "valueType": "msg.payload",
+        "tagPath": "",
+        "name": "workstation",
+        "x": 1110,
+        "y": 1240,
+        "wires": [
+            [
+                "a783fa5b13a3695b"
+            ]
+        ]
+    },
+    {
+        "id": "ad654e283545e1dd",
+        "type": "http response",
+        "z": "2a9722bcf1119b04",
+        "name": "res",
+        "statusCode": "500",
+        "headers": {},
+        "x": 1950,
+        "y": 1200,
+        "wires": []
+    },
+    {
+        "id": "a783fa5b13a3695b",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.ignitionResult.value",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1300,
+        "y": 1240,
+        "wires": [
+            [
+                "ece1ad1563935b07"
+            ]
+        ]
+    },
+    {
+        "id": "ece1ad1563935b07",
+        "type": "json",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 1450,
+        "y": 1240,
+        "wires": [
+            [
+                "c8d756d0a27997ed"
+            ]
+        ]
+    },
+    {
+        "id": "c8d756d0a27997ed",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "tag",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg",
+                "dc": true
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1610,
+        "y": 1240,
+        "wires": [
+            [
+                "d302a332750ab36a"
+            ]
+        ]
+    },
+    {
+        "id": "d302a332750ab36a",
+        "type": "switch",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "property": "tag.run_id",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "neq",
+                "v": "0",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1790,
+        "y": 1240,
+        "wires": [
+            [
+                "ad654e283545e1dd"
+            ],
+            [
+                "ad43544cebea2b8e"
+            ]
+        ]
+    },
+    {
+        "id": "bb5ea0883767b3d1",
+        "type": "ignition-tag-write",
+        "z": "2a9722bcf1119b04",
+        "server": "cffb28fa7aee20af",
+        "value": "",
+        "valueType": "msg.payload",
+        "tagPath": "",
+        "tagValue": "",
+        "name": "write",
+        "x": 2110,
+        "y": 1240,
+        "wires": [
+            [
+                "eee95af2a307a714"
+            ]
+        ]
+    },
+    {
+        "id": "ad43544cebea2b8e",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "(\t    $op := $flowContext('op');\t    \t    {\t        \"tagPath\": \"[default]Workstation/\" & $op.workstationId,\t        \"tagValue\": $op.{\t            \"run_op_id\": id,\t            \"run_op_code\": code,\t            \"run_id\": run.id,\t            \"run_wo_id\": run.workOrderId,\t            \"run_wo_qty\": quantity,\t            \"actual_cost\": 0.0,\t            \"actual_rate\": 0.0,\t            \"prod_count\": 0.0,\t            \"scrap_count\": 0.0,\t            \"rate\": rate,\t            \"cost\": plannedCost,\t            \"start\": $moment().toISOString(),\t            \"cost_hr\":ext.wo.hour_rate\t        }\t    }   \t)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1960,
+        "y": 1240,
+        "wires": [
+            [
+                "bb5ea0883767b3d1"
+            ]
+        ]
+    },
+    {
+        "id": "3d18ace79184f303",
+        "type": "http response",
+        "z": "2a9722bcf1119b04",
+        "name": "res",
+        "statusCode": "200",
+        "headers": {},
+        "x": 3130,
+        "y": 1220,
+        "wires": []
+    },
+    {
+        "id": "50297dd012f730bd",
+        "type": "inject",
+        "z": "2a9722bcf1119b04",
+        "name": "poll for live runs",
+        "props": [
+            {
+                "p": "time",
+                "v": "",
+                "vt": "date"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "30",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0",
+        "topic": "live_runs",
+        "x": 230,
+        "y": 1440,
+        "wires": [
+            [
+                "42a0c64ca81d9074"
+            ]
+        ]
+    },
+    {
+        "id": "42a0c64ca81d9074",
+        "type": "graphql",
+        "z": "2a9722bcf1119b04",
+        "name": "query workstations",
+        "graphql": "9fa36512b664b791",
+        "format": "text",
+        "template": "{\n  workstations{\n    edges{node{id}}\n  }\n}",
+        "syntax": "plain",
+        "token": "",
+        "showDebug": false,
+        "x": 450,
+        "y": 1440,
+        "wires": [
+            [
+                "dd5950194a778ca7",
+                "26bfc7937a8a5935"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "dd5950194a778ca7",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "set tagpath",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"tagPath\": payload.data.workstations.edges.node.(\t        \"[default]Workstation/\" & id\t    )\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 650,
+        "y": 1440,
+        "wires": [
+            [
+                "c8a0be6f61cabf08"
+            ]
+        ]
+    },
+    {
+        "id": "c8a0be6f61cabf08",
+        "type": "ignition-tag-read",
+        "z": "2a9722bcf1119b04",
+        "server": "cffb28fa7aee20af",
+        "value": "",
+        "valueType": "msg.payload",
+        "tagPath": "",
+        "name": "workstation",
+        "x": 830,
+        "y": 1440,
+        "wires": [
+            [
+                "1f1c671f134ea5b1"
+            ]
+        ]
+    },
+    {
+        "id": "1f1c671f134ea5b1",
+        "type": "split",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "property": "payload.ignitionResult.values",
+        "x": 990,
+        "y": 1440,
+        "wires": [
+            [
+                "df6b25dc5712fa34"
+            ]
+        ]
+    },
+    {
+        "id": "df6b25dc5712fa34",
+        "type": "json",
+        "z": "2a9722bcf1119b04",
+        "name": "parse JSON",
+        "property": "payload.ignitionResult.values.value",
+        "action": "obj",
+        "pretty": false,
+        "x": 1170,
+        "y": 1440,
+        "wires": [
+            [
+                "75c2b932aca3afcb"
+            ]
+        ]
+    },
+    {
+        "id": "75c2b932aca3afcb",
+        "type": "join",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "mode": "auto",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "useparts": false,
+        "accumulate": true,
+        "timeout": "",
+        "count": "",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 1330,
+        "y": 1440,
+        "wires": [
+            [
+                "e1cee415011fb56e"
+            ]
+        ]
+    },
+    {
+        "id": "dd3032ca9c0debc7",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "calc",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "(\t    $calc_status := function($status, $max_status, $in_prob, $out_prob) {(\t        $status = 0 ? (\t            $random() > 1-$in_prob ? $ceil($random()*$max_status) : 0 \t        ) : (\t            $random() > 1-$out_prob ? 0 : $status\t        )\t    )};\t    $calc_prod := function($wo_qty, $current_qty, $updated_at, $rate, $scrap_prob, $qty_prob, $qty_var, $int) {(\t        $proj_ := ($toMillis($now()) - $updatedAt) * (rate / 3600000) * ($random()*2*$qty_var + $qty_prob-$qty_var);\t        $proj := $int ? $ceil($proj_) ? $proj_;\t\t        $res := $proj > $wo_qty ? $wo_qty : 0;\t    $t := $res > run_wo_qty - $c ?  run_wo_qty - $c : $res;\t    $comp := $t + $c > run_wo_qty;\t    $scrap := $random() >= $scrap_prob;\t    $total := $t + $c;\t    )};\t    \t    [$$.ignition.values.value[$exists(run_id) and run_id!=\"\" and run_id!=\"0\"].(\t    $rid := run_id;\t    $op_id := run_op_id;\t    $run := $$.payload.data.runs.edges.node[id=$rid];\t    $s := $run.runOperations.edges^(node.sequenceNumber).node.id;\t    $final := $s[-1] = run_op_id;\t    $c := scrap_count + prod_count;\t    $proj := ($toMillis($now()) - $toMillis(start)) * (rate / 3600000);\t    $rand := $random() * (1.4 - 0.0) + 0.0;\t\t    $res := $proj*$rand > $c ? $ceil($rand * rate/60) : 0;\t    $t := $res > run_wo_qty - $c ?  run_wo_qty - $c : $res;\t    $comp := $t + $c = run_wo_qty;\t    $scrap := $rand < 0.2;\t    $total := $t + $c;\t    $rate := $total = 0 ? 0 : $total/(($toMillis($now()) - $toMillis(start))/3600000);\t    $cost := (($toMillis($now()) - $toMillis(start))/3600000)*cost_hr;\t    {\t        \"comp\": $comp,\t        \"scrap\": $scrap,\t        \"total\": $total,\t        \"rate\": $rate,\t        \"cost\":$cost,\t        \"op\":$,\t        \"final\": $final,\t        \"run\": $run,\t        \"s\": $s[-1],\t        \"total_cost\": $sum($run.runOperations.edges[node.id!=$op_id].node.$number(actualCost))\t    }\t\t    )]\t    )",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1850,
+        "y": 1440,
+        "wires": [
+            [
+                "f9c08c4e00e693d0",
+                "7e0f1bd3c58f1223"
+            ]
+        ]
+    },
+    {
+        "id": "0c6bea7f057cb5c7",
+        "type": "split",
+        "z": "2a9722bcf1119b04",
+        "name": "split calc",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "topic",
+        "property": "payload",
+        "x": 700,
+        "y": 1540,
+        "wires": [
+            [
+                "84e9e80d12f71053"
+            ]
+        ]
+    },
+    {
+        "id": "08fef6c3b09767a7",
+        "type": "graphql",
+        "z": "2a9722bcf1119b04",
+        "name": "update ops",
+        "graphql": "9fa36512b664b791",
+        "format": "text",
+        "template": "mutation(\n  $op:UpdateRunOperationInput!,\n  $run: UpdateRunInput!\n  ){\n  updateRunOperation(input:$op){\n    runOperation{id sequenceNumber run{runOperations{edges{node{id sequenceNumber}}}}}\n  }\n  updateRun(input:$run){\n    run{id actualCost}\n  }\n}",
+        "syntax": "plain",
+        "token": "",
+        "showDebug": true,
+        "x": 1090,
+        "y": 1540,
+        "wires": [
+            [
+                "479b4dd0bb0efef8"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "84e9e80d12f71053",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "variables",
+                "pt": "msg",
+                "to": "\t    {\t    \"op\":payload.{\t        \"id\": op.run_op_id,\t        \"patch\":{\t            \"actualQuantity\": total,\t            \"actualRate\": rate,\t            \"actualCycleTime\": $ceil(3600000/rate),\t            \"actualEndDate\": comp ? $now() : null,\t            \"actualCost\": cost\t        }\t    },\t    \"run\": payload.{\t        \"id\": op.run_id,\t        \"patch\": {\t            \"actualCost\": total_cost + cost\t        }\t    }\t}\t",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "op",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 880,
+        "y": 1540,
+        "wires": [
+            [
+                "08fef6c3b09767a7",
+                "286dd0fb7f0e8f85"
+            ]
+        ]
+    },
+    {
+        "id": "eee95af2a307a714",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "variables",
+                "pt": "msg",
+                "to": "{\t    \"op\":{\t        \"id\": $flowContext('req').body.op,\t        \"patch\":{\t            \"actualQuantity\": 0,\t            \"actualRate\": 0,\t            \"actualCycleTime\": 0,\t            \"actualStartDate\": $now(),\t            \"actualCost\": 0\t        }\t    }\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2310,
+        "y": 1240,
+        "wires": [
+            [
+                "e16173c7b3025384"
+            ]
+        ]
+    },
+    {
+        "id": "e16173c7b3025384",
+        "type": "graphql",
+        "z": "2a9722bcf1119b04",
+        "name": "update ops",
+        "graphql": "9fa36512b664b791",
+        "format": "text",
+        "template": "mutation($op:UpdateRunOperationInput!){\n  updateRunOperation(input:$op){\n    runOperation{id run{workOrderId id actualStartDate}}\n  }\n}",
+        "syntax": "plain",
+        "token": "",
+        "showDebug": false,
+        "x": 2530,
+        "y": 1240,
+        "wires": [
+            [
+                "579c4aecf178b97e",
+                "6b895ec9093a7114"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "989e61f2f3936b53",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "(\t    $op := payload;\t    $op.comp ? {\t            \"tagPath\": \"[default]Workstation/\" & $op.op.id,\t            \"tagValue\": {\t            \"actual_cost\": 0,\t            \"actual_rate\": 0,\t            \"prod_count\": 0.0,\t            \"scrap_count\": 0.0,\t            \"run_op_id\": \"\",\t            \"run_op_code\": \"\",\t            \"run_id\": \"\",\t            \"run_wo_id\": \"\",\t            \"run_wo_qty\": \"\",\t            \"rate\": 0.0,\t            \"cost\": 0.0,\t            \"start\": \"\",\t            \"cost_hr\": 0.0\t        }\t    } : {\t        \"tagPath\": \"[default]Workstation/\" & $op.op.id,\t        \"tagValue\": $op.{\t            \t            \"actual_cost\": cost,\t            \"actual_rate\": rate,\t            \"prod_count\": total,\t            \"scrap_count\": 0.0\t        }\t    }   \t)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2920,
+        "y": 1540,
+        "wires": [
+            [
+                "2e2e2e02f0298f7f"
+            ]
+        ]
+    },
+    {
+        "id": "2e2e2e02f0298f7f",
+        "type": "ignition-tag-write",
+        "z": "2a9722bcf1119b04",
+        "server": "cffb28fa7aee20af",
+        "value": "",
+        "valueType": "msg.payload",
+        "tagPath": "",
+        "tagValue": "",
+        "name": "write",
+        "x": 3090,
+        "y": 1540,
+        "wires": [
+            [
+                "5fc0ee9006462009"
+            ]
+        ]
+    },
+    {
+        "id": "cb4f2333230976bf",
+        "type": "switch",
+        "z": "2a9722bcf1119b04",
+        "name": "if final",
+        "property": "payload.final",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "true"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1790,
+        "y": 1540,
+        "wires": [
+            [
+                "c172b62391869803"
+            ],
+            [
+                "064be391dfaaa963"
+            ]
+        ]
+    },
+    {
+        "id": "bf743f959263dd69",
+        "type": "graphql",
+        "z": "2a9722bcf1119b04",
+        "name": "query run",
+        "graphql": "9fa36512b664b791",
+        "format": "text",
+        "template": "query($r:RunFilter){\n  runs(filter: $r){\n    edges{node{id actualCost runOperations{edges{node{id sequenceNumber actualCost}}}}}\n  }\n}",
+        "syntax": "plain",
+        "token": "",
+        "showDebug": false,
+        "x": 1680,
+        "y": 1440,
+        "wires": [
+            [
+                "dd3032ca9c0debc7",
+                "72c4798a7836db75"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "e1cee415011fb56e",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "variables",
+                "pt": "msg",
+                "to": "\t{\t  \"r\": {\t    \"id\": {\t      \"in\": [payload.ignitionResult.values.value[$exists(run_id) and run_id !=0].run_id]\t    }\t  }\t}",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "ignition",
+                "pt": "msg",
+                "to": "payload.ignitionResult",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1500,
+        "y": 1440,
+        "wires": [
+            [
+                "bf743f959263dd69"
+            ]
+        ]
+    },
+    {
+        "id": "c172b62391869803",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "variables",
+                "pt": "msg",
+                "to": "payload.{\t    \"run\":{\t        \"id\":op.run_id,\t        \"patch\":{\t            \"completedQuantity\": total,\t            \"status\": comp ? \"completed\" : \"started\",\t            \"actualEndDate\": comp ? $now() : null\t        }\t    },\t    \"wo\":{\t        \"id\":op.run_wo_id,\t        \"patch\":{\t            \"completedQuantity\": total,\t            \"status\": comp ? \"completed\" : \"started\",\t            \"actualEndDate\": comp ? $now() : null\t        }\t    }\t}\t",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1970,
+        "y": 1520,
+        "wires": [
+            [
+                "0b844323e4027d6f"
+            ]
+        ]
+    },
+    {
+        "id": "0b844323e4027d6f",
+        "type": "graphql",
+        "z": "2a9722bcf1119b04",
+        "name": "update run/work order",
+        "graphql": "9fa36512b664b791",
+        "format": "text",
+        "template": "mutation(\n  $wo:UpdateWorkOrderInput!,\n  $run: UpdateRunInput!\n  ){\n  updateWorkOrder(input:$wo){\n    workOrder{id}\n  }\n  updateRun(input:$run){\n    run{id}\n  }\n}",
+        "syntax": "plain",
+        "token": "",
+        "showDebug": true,
+        "x": 2200,
+        "y": 1520,
+        "wires": [
+            [
+                "064be391dfaaa963"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "579c4aecf178b97e",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "variables",
+                "pt": "msg",
+                "to": "payload.data.updateRunOperation.runOperation.{\t   \"run\":{\t       \"id\":run.id,\t       \"patch\":{\t           \"status\":  \"started\",\t           \"actualStartDate\": run.actualStartDate!=null ? run.actualStartDate : $now()\t        }\t    },\t   \"wo\":{\t       \"id\":run.workOrderId,\t       \"patch\":{\t           \"status\": \"started\",\t           \"actualStartDate\": run.actualStartDate!=null ? run.actualStartDate : $now()\t        }\t    }\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2730,
+        "y": 1240,
+        "wires": [
+            [
+                "6a834e555709453f",
+                "302f7f3cb5a022e1"
+            ]
+        ]
+    },
+    {
+        "id": "6a834e555709453f",
+        "type": "graphql",
+        "z": "2a9722bcf1119b04",
+        "name": "update run/work order",
+        "graphql": "9fa36512b664b791",
+        "format": "text",
+        "template": "mutation(\n  $wo:UpdateWorkOrderInput!,\n  $run: UpdateRunInput!\n  ){\n  updateWorkOrder(input:$wo){\n    workOrder{id}\n  }\n  updateRun(input:$run){\n    run{id}\n  }\n}",
+        "syntax": "plain",
+        "token": "",
+        "showDebug": true,
+        "x": 2940,
+        "y": 1240,
+        "wires": [
+            [
+                "3d18ace79184f303",
+                "fb813a46cba3d3ba"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "9f7881d02fb975c6",
+        "type": "http in",
+        "z": "2a9722bcf1119b04",
+        "name": "GET /op/:id",
+        "url": "/op/:id",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 270,
+        "y": 1980,
+        "wires": [
+            [
+                "bb65187b46f0f6c0",
+                "3044d1f65e8d5b43"
+            ]
+        ]
+    },
+    {
+        "id": "bb65187b46f0f6c0",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "variables",
+                "pt": "msg",
+                "to": "{\"op\":req.params.id}",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "req.params.id",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 440,
+        "y": 1980,
+        "wires": [
+            [
+                "56b2938fd50b2fd7",
+                "6f53fdb424429f3b"
+            ]
+        ]
+    },
+    {
+        "id": "56b2938fd50b2fd7",
+        "type": "graphql",
+        "z": "2a9722bcf1119b04",
+        "name": "query op",
+        "graphql": "9fa36512b664b791",
+        "format": "handlebars",
+        "template": "query ($op:String!){\n  runOperation(id:$op){\n    id\n    workstationId\n    quantity\n    actualQuantity\n    rate\n    actualRate\n    plannedCost\n    actualCost\n    actualStartDate\n    actualEndDate\n    ext\n  }\n}",
+        "syntax": "mustache",
+        "token": "",
+        "showDebug": false,
+        "x": 600,
+        "y": 1980,
+        "wires": [
+            [
+                "a3dcb3589ca7bda1"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "735c199048a92564",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "variables",
+                "pt": "msg",
+                "to": "payload.data.runOperation.{\t    \"start\": $string($toMillis(actualStartDate)),\t    \"end\": actualEndDate!=null ? $string($toMillis(actualEndDate)) : $string($toMillis($moment().toISOString())),\t    \"tag\": {\t        \"tagpath\":{\t            \"in\":[\"workstation/\" & $lowercase(workstationId) & \"/actual_cost\",\"workstation/\" & $lowercase(workstationId) & \"/prod_count\"]\t        }\t    }\t}",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "op",
+                "pt": "msg",
+                "to": "payload.data.runOperation",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 940,
+        "y": 1980,
+        "wires": [
+            [
+                "243fd79a2cb78821"
+            ]
+        ]
+    },
+    {
+        "id": "243fd79a2cb78821",
+        "type": "graphql",
+        "z": "2a9722bcf1119b04",
+        "name": "tags by workstation",
+        "graphql": "9fa36512b664b791",
+        "format": "handlebars",
+        "template": "query ($tag: SqlthTeFilter, $start:BigInt, $end: BigInt){\n  sqlthTes(filter:$tag, orderBy:TAGPATH_ASC){\n    edges{\n      node {\n        tagpath\n        id\n        sqlth1DataByTagid(orderBy:T_STAMP_ASC,filter:{\n          and: [\n            {\n              tStamp: {\n                greaterThanOrEqualTo: $start\n              }\n            },\n {\n              tStamp: {\n                lessThanOrEqualTo: $end\n              }\n            }\n          ]\n        }) {\n          edges {\n            node {\n              tStamp\n              intvalue\n              floatvalue\n              stringvalue\n              datevalue\n              dataintegrity\n            }\n          }\n        }\n      }\n    }\n  }\n}",
+        "syntax": "mustache",
+        "token": "",
+        "showDebug": false,
+        "x": 1130,
+        "y": 1980,
+        "wires": [
+            [
+                "7ad77f837e34789d",
+                "34744504f2e121fc"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "5d72d61974fabf0a",
+        "type": "http response",
+        "z": "2a9722bcf1119b04",
+        "name": "res",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1890,
+        "y": 1980,
+        "wires": []
+    },
+    {
+        "id": "7ad77f837e34789d",
+        "type": "function",
+        "z": "2a9722bcf1119b04",
+        "name": "function 1",
+        "func": "\nconst ts = msg.payload.data.sqlthTes.edges[0].node.sqlth1DataByTagid.edges.map(v=>v.node);\nconst pc =msg.payload.data.sqlthTes.edges[1].node.sqlth1DataByTagid.edges.map(v=>v.node);\nconst op = msg.op;\nconst start = new Date(op.actualStartDate).getTime();\nconst rate = op.ext.wo.hour_rate;\nconst d = ts.map((v,i)=>{\n    const t = parseInt(v.tStamp);\n    const r = op?.rate ?? 0\n    const std = typeof((pc[i].floatvalue/r) * rate) == 'number' ? (pc[i].floatvalue/r) * rate : 0;\n    const diff = std-v.floatvalue;\n    return [   \n        parseInt(v.tStamp),\n        parseFloat(parseFloat(v.floatvalue).toFixed(2)),\n        parseFloat(parseFloat(std).toFixed(2)),\n        parseFloat(parseFloat(diff).toFixed(2)),\n        parseFloat(pc[i].floatvalue)\n    ];\n});\nmsg.payload = {\n    h:[\"time\", \"cost\", \"std\", \"diff\", \"prod\"],\n    data: d\n   \n}\nreturn msg",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1420,
+        "y": 1980,
+        "wires": [
+            [
+                "5d72d61974fabf0a"
+            ]
+        ]
+    },
+    {
+        "id": "6b895ec9093a7114",
+        "type": "debug",
+        "z": "2a9722bcf1119b04",
+        "name": "debug 40",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2720,
+        "y": 1160,
+        "wires": []
+    },
+    {
+        "id": "302f7f3cb5a022e1",
+        "type": "debug",
+        "z": "2a9722bcf1119b04",
+        "name": "debug 41",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2880,
+        "y": 1100,
+        "wires": []
+    },
+    {
+        "id": "fb813a46cba3d3ba",
+        "type": "debug",
+        "z": "2a9722bcf1119b04",
+        "name": "debug 42",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 3080,
+        "y": 1140,
+        "wires": []
+    },
+    {
+        "id": "a3dcb3589ca7bda1",
+        "type": "switch",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "property": "payload.data.runOperation.actualStartDate",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "null"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 750,
+        "y": 1980,
+        "wires": [
+            [
+                "48d8c4400bc62d94"
+            ],
+            [
+                "735c199048a92564"
+            ]
+        ]
+    },
+    {
+        "id": "48d8c4400bc62d94",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": " {\t    \"h\":[\"time\", \"cost\", \"std\", \"diff\", \"prod\"],\t    \"data\": []\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 960,
+        "y": 1920,
+        "wires": [
+            [
+                "3fddc774f01da49c"
+            ]
+        ]
+    },
+    {
+        "id": "3fddc774f01da49c",
+        "type": "http response",
+        "z": "2a9722bcf1119b04",
+        "name": "res",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1150,
+        "y": 1920,
+        "wires": []
+    },
+    {
+        "id": "479b4dd0bb0efef8",
+        "type": "join",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "payload.data.updateRunOperation.runOperation.id",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "useparts": false,
+        "accumulate": false,
+        "timeout": "1",
+        "count": "",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 1270,
+        "y": 1540,
+        "wires": [
+            [
+                "7511fbe02b973124"
+            ]
+        ]
+    },
+    {
+        "id": "f9c08c4e00e693d0",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "calc",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg",
+                "dc": true
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "$merge([payload.{\t    $string(op.run_op_id): $\t}])",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2000,
+        "y": 1440,
+        "wires": [
+            [
+                "0c6bea7f057cb5c7"
+            ]
+        ]
+    },
+    {
+        "id": "7511fbe02b973124",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "$merge([$flowContext('calc').{\t    $string(op.run_op_id): $\t}])",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1420,
+        "y": 1540,
+        "wires": [
+            [
+                "dc5d8806cc949be3"
+            ]
+        ]
+    },
+    {
+        "id": "dc5d8806cc949be3",
+        "type": "split",
+        "z": "2a9722bcf1119b04",
+        "name": "split calc",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "topic",
+        "property": "payload",
+        "x": 1620,
+        "y": 1540,
+        "wires": [
+            [
+                "cb4f2333230976bf"
+            ]
+        ]
+    },
+    {
+        "id": "064be391dfaaa963",
+        "type": "join",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "payload",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "useparts": false,
+        "accumulate": false,
+        "timeout": "1",
+        "count": "",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 2410,
+        "y": 1540,
+        "wires": [
+            [
+                "8c0684a081a25855"
+            ]
+        ]
+    },
+    {
+        "id": "8c0684a081a25855",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "$merge([$flowContext('calc').{\t    $string(op.run_op_id): $\t}])",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2560,
+        "y": 1540,
+        "wires": [
+            [
+                "8614adabe7ebe4eb"
+            ]
+        ]
+    },
+    {
+        "id": "8614adabe7ebe4eb",
+        "type": "split",
+        "z": "2a9722bcf1119b04",
+        "name": "split calc",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "topic",
+        "property": "payload",
+        "x": 2740,
+        "y": 1540,
+        "wires": [
+            [
+                "989e61f2f3936b53"
+            ]
+        ]
+    },
+    {
+        "id": "d448ab59cf4a76ce",
+        "type": "http in",
+        "z": "2a9722bcf1119b04",
+        "name": "GET /woext/:id",
+        "url": "/woext/:id",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 280,
+        "y": 2080,
+        "wires": [
+            [
+                "3ef602332f7e710c"
+            ]
+        ]
+    },
+    {
+        "id": "3ef602332f7e710c",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "variables",
+                "pt": "msg",
+                "to": "{\"wo\":req.params.id}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 510,
+        "y": 2080,
+        "wires": [
+            [
+                "bae88b354fc68a6a"
+            ]
+        ]
+    },
+    {
+        "id": "bae88b354fc68a6a",
+        "type": "graphql",
+        "z": "2a9722bcf1119b04",
+        "name": "query workorders",
+        "graphql": "9fa36512b664b791",
+        "format": "text",
+        "template": "query workOrder($wo:String!){\n  workOrder(id:$wo){\n      id \n      itemId\n      bomId\n      routingId\n      quantity\n      completedQuantity\n      plannedStartDate\n      plannedEndDate\n      actualStartDate\n      actualEndDate\n      status\n      runs{edges{node{\n        actualCost\n        completedQuantity\n        runOperations(orderBy:SEQUENCE_NUMBER_ASC) {edges{node{\n          id \n          sequenceNumber\n          workstationId\n          rate\n          cycleTime\n          quantity\n          actualQuantity\n  \t\t\t\tactualRate\n          actualCycleTime\n          plannedStartDate\n          plannedEndDate\n          actualStartDate\n          actualEndDate\n          plannedCost\n          actualCost\n          code\n          ext\n        }}}\n      }}}\n  }\n}",
+        "syntax": "plain",
+        "token": "",
+        "showDebug": false,
+        "x": 850,
+        "y": 2080,
+        "wires": [
+            [
+                "7483576a819fe38d"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "35a0a0df6dd44f75",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "variables",
+                "pt": "msg",
+                "to": "payload.data.workOrder.runs.edges[0].node.runOperations.edges.node.{\t    \"start\": $string($toMillis(actualStartDate)),\t    \"end\": actualEndDate!=null ? $string($toMillis(actualEndDate)) : $string($toMillis($moment().toISOString())),\t    \"tag\": {\t        \"tagpath\":{\t            \"in\":[\"workstation/\" & $lowercase(workstationId) & \"/actual_cost\",\"workstation/\" & $lowercase(workstationId) & \"/prod_count\"]\t        }\t    }\t}",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.data.workOrder",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "wo",
+                "pt": "flow",
+                "to": "payload.data.workOrder",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1220,
+        "y": 2120,
+        "wires": [
+            [
+                "043c42e798c37587",
+                "c3c0e16d83add266"
+            ]
+        ]
+    },
+    {
+        "id": "a088908d10b77270",
+        "type": "http response",
+        "z": "2a9722bcf1119b04",
+        "name": "res",
+        "statusCode": "200",
+        "headers": {},
+        "x": 2110,
+        "y": 2120,
+        "wires": []
+    },
+    {
+        "id": "7483576a819fe38d",
+        "type": "switch",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "property": "payload.data.workOrder.id",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "null"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1050,
+        "y": 2080,
+        "wires": [
+            [
+                "da011f02af8cdfe0"
+            ],
+            [
+                "35a0a0df6dd44f75",
+                "c8e255cc601ddcd7"
+            ]
+        ]
+    },
+    {
+        "id": "da011f02af8cdfe0",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": " {\"body\":payload.data}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1220,
+        "y": 2040,
+        "wires": [
+            [
+                "797052a14b5cf550"
+            ]
+        ]
+    },
+    {
+        "id": "797052a14b5cf550",
+        "type": "http response",
+        "z": "2a9722bcf1119b04",
+        "name": "res",
+        "statusCode": "400",
+        "headers": {},
+        "x": 1410,
+        "y": 2040,
+        "wires": []
+    },
+    {
+        "id": "d6c817ccf81b5052",
+        "type": "split",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "topic",
+        "property": "variables",
+        "x": 1390,
+        "y": 2120,
+        "wires": [
+            [
+                "80293d81bb59345b",
+                "3a21a87753f06182"
+            ]
+        ]
+    },
+    {
+        "id": "3a21a87753f06182",
+        "type": "graphql",
+        "z": "2a9722bcf1119b04",
+        "name": "tags by workstation",
+        "graphql": "9fa36512b664b791",
+        "format": "handlebars",
+        "template": "query ($tag: SqlthTeFilter, $start:BigInt, $end: BigInt){\n  sqlthTes(filter:$tag){\n    edges{\n      node {\n        tagpath\n        id\n        sqlth1DataByTagid(orderBy:T_STAMP_ASC,filter:{\n          and: [\n            {\n              tStamp: {\n                greaterThanOrEqualTo: $start\n              }\n            },\n {\n              tStamp: {\n                lessThanOrEqualTo: $end\n              }\n            }\n          ]\n        }) {\n          edges {\n            node {\n              tStamp\n              intvalue\n              floatvalue\n              stringvalue\n              datevalue\n              dataintegrity\n            }\n          }\n        }\n      }\n    }\n  }\n}",
+        "syntax": "mustache",
+        "token": "",
+        "showDebug": false,
+        "x": 1570,
+        "y": 2120,
+        "wires": [
+            [
+                "7c782c065f35eb4b"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "f91cf59a16724769",
+        "type": "debug",
+        "z": "2a9722bcf1119b04",
+        "name": "debug 56",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1880,
+        "y": 2200,
+        "wires": []
+    },
+    {
+        "id": "5f9cc1cd5408dd6c",
+        "type": "join",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "mode": "custom",
+        "build": "merged",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "useparts": false,
+        "accumulate": false,
+        "timeout": "1",
+        "count": "",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 1930,
+        "y": 2120,
+        "wires": [
+            [
+                "f61246c285a9c749",
+                "a088908d10b77270"
+            ]
+        ]
+    },
+    {
+        "id": "f61246c285a9c749",
+        "type": "debug",
+        "z": "2a9722bcf1119b04",
+        "name": "debug 57",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2060,
+        "y": 2200,
+        "wires": []
+    },
+    {
+        "id": "043c42e798c37587",
+        "type": "debug",
+        "z": "2a9722bcf1119b04",
+        "name": "debug 59",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1380,
+        "y": 2200,
+        "wires": []
+    },
+    {
+        "id": "80293d81bb59345b",
+        "type": "debug",
+        "z": "2a9722bcf1119b04",
+        "name": "debug 60",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1620,
+        "y": 2200,
+        "wires": []
+    },
+    {
+        "id": "c8e255cc601ddcd7",
+        "type": "debug",
+        "z": "2a9722bcf1119b04",
+        "name": "debug 61",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1040,
+        "y": 2180,
+        "wires": []
+    },
+    {
+        "id": "7c782c065f35eb4b",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "$merge([payload.graphql.sqlthTes.edges.node{$string(id): $\t}])",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1760,
+        "y": 2120,
+        "wires": [
+            [
+                "5f9cc1cd5408dd6c",
+                "f91cf59a16724769"
+            ]
+        ]
+    },
+    {
+        "id": "c3c0e16d83add266",
+        "type": "function",
+        "z": "2a9722bcf1119b04",
+        "name": "function 2",
+        "func": "const ops = msg.payload.runs?.edges?.map(v=>v.node.runOperations?.edges)[0] ?? [];\n\nconst queries = ops?.map(op=>`tags_${op.node.id}:sqlthTes(filter:{\n    tagpath:{\n      in:[\"workstation/${op.node.workstationId.toLowerCase()}/actual_cost\",\"workstation/${op.node.workstationId.toLowerCase()}/prod_count\"]\n  }}){\n    edges{node{\n      tagpath \n      id \n      sqlth1DataByTagid(orderBy:T_STAMP_ASC,filter:{\n            and: [\n              {\n                tStamp: {\n                  greaterThanOrEqualTo: \"${(new Date(op.node.actualStartDate)).getTime()}\"\n                }\n              },{\n                tStamp: {\n                  lessThanOrEqualTo: \"${op.node.actualEndDate===null ? (new Date(op.node.actualEndDate)).getTime() : (new Date()).getTime()}\"\n                }\n              }\n            ]\n          }) {\n          edges {\n            node {\n              tStamp\n              intvalue\n              floatvalue\n              stringvalue\n              datevalue\n              dataintegrity\n            }\n          }\n  }}}}`\n);\n\nconst res = await undici.request(\"http://localhost:5000/graphql\",{\n    method: 'POST',\n    headers: {\n      'Content-Type': 'application/json',\n    },\n    body: JSON.stringify({\n        query: `{${queries.join()}}`\n    })\n}).then(r=>r.body.json())\nnode.warn({\"res\":res})\n\nmsg[\"tags\"] = res.data\n\nreturn msg;\n\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "undici",
+                "module": "undici"
+            }
+        ],
+        "x": 1380,
+        "y": 2260,
+        "wires": [
+            [
+                "ea19e3dbbbfc78af",
+                "b97b92c57ffae978"
+            ]
+        ]
+    },
+    {
+        "id": "60f7e5e2dcc303fa",
+        "type": "inject",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 1240,
+        "y": 2260,
+        "wires": [
+            [
+                "c3c0e16d83add266"
+            ]
+        ]
+    },
+    {
+        "id": "ea19e3dbbbfc78af",
+        "type": "debug",
+        "z": "2a9722bcf1119b04",
+        "name": "debug 62",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1320,
+        "y": 2380,
+        "wires": []
+    },
+    {
+        "id": "b97b92c57ffae978",
+        "type": "http response",
+        "z": "2a9722bcf1119b04",
+        "name": "res",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1533.1903076171875,
+        "y": 2273.63916015625,
+        "wires": []
+    },
+    {
+        "id": "ae5a5ef410d10923",
+        "type": "debug",
+        "z": "2a9722bcf1119b04",
+        "name": "debug 64",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 340,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "cd4a37356d0b9180",
+        "type": "split",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "property": "payload",
+        "x": 650,
+        "y": 520,
+        "wires": [
+            [
+                "27758aa6bf230513"
+            ]
+        ]
+    },
+    {
+        "id": "27758aa6bf230513",
+        "type": "http request",
+        "z": "2a9722bcf1119b04",
+        "name": "Item Request",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://172.19.0.1:8080/api/resource/Item/{{{payload}}}",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [
+            {
+                "keyType": "Authorization",
+                "keyValue": "",
+                "valueType": "other",
+                "valueValue": "${ERP_AUTH}"
+            }
+        ],
+        "x": 790,
+        "y": 520,
+        "wires": [
+            [
+                "5973a99915eb9650"
+            ]
+        ]
+    },
+    {
+        "id": "43c0a650814ef79f",
+        "type": "join",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "mode": "auto",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "useparts": false,
+        "accumulate": "false",
+        "timeout": "",
+        "count": "",
+        "reduceRight": false,
+        "x": 1050,
+        "y": 520,
+        "wires": [
+            [
+                "294380ed24203135"
+            ]
+        ]
+    },
+    {
+        "id": "5973a99915eb9650",
+        "type": "json",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 930,
+        "y": 520,
+        "wires": [
+            [
+                "43c0a650814ef79f"
+            ]
+        ]
+    },
+    {
+        "id": "294380ed24203135",
+        "type": "function",
+        "z": "2a9722bcf1119b04",
+        "name": "function 4",
+        "func": "\nif (!msg.payload || !Array.isArray(msg.payload)) {\n  throw new Error(\"Missing Item Data!\");\n}\nconst items = msg.payload\nconst query = `\n  mutation($input:UpsertItemInput!){\n    upsertItem(input:$input){\n      item{id}\n    }\n  }\n`\nconst parseItems = function(item){\n  const i = item.data;\n  return {\n    input:{\n      item: { \n        id: i.name,\n        name: i.name,\n        externalId: i.name,\n        itemType: i.item_group === \"Raw Material\" ? \"RAW\" : \"ASM\",\n        \"description\": \"\",\n        \"cost\": i.valuation_rate,\n        \"ext\": i,\n      }\n    }\n  }\n}\nconst upserts = await Promise.all(items.map(i=>{\n  return undici.request(\"http://graphile:5999/graphql\",{\n    method: 'POST',\n    headers: {\n      'Content-Type': 'application/json',\n    },\n    body: JSON.stringify({\n        query: query,\n        variables: JSON.stringify(parseItems(i))\n    })\n  })\n}))\nconst upsertsData = await Promise.all(upserts.map(r=>r.body.json()))\n\nnode.warn({\"upsert\":upsertsData})\nmsg.payload=upsertsData;\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "undici",
+                "module": "undici"
+            }
+        ],
+        "x": 1180,
+        "y": 520,
+        "wires": [
+            [
+                "3da6524941468503"
+            ]
+        ]
+    },
+    {
+        "id": "59eeb0dd38f0949a",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "$append([wo.asm], [wo.items.id])",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 500,
+        "y": 520,
+        "wires": [
+            [
+                "cd4a37356d0b9180"
+            ]
+        ]
+    },
+    {
+        "id": "5fc0ee9006462009",
+        "type": "join",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "mode": "auto",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "useparts": false,
+        "accumulate": true,
+        "timeout": "",
+        "count": "",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 3210,
+        "y": 1540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c9e4a1b20e8fdf4c",
+        "type": "change",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "\t    payload.{\t        \"i\": {\t            \"item\": {\t                \"id\": name,\t                \"name\": name,\t                \"external_id\": name,\t                \"type\": type\t            }\t        }\t    }\t",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1060,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f191cd2aeaadce0f",
+        "type": "catch",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 360,
+        "y": 180,
+        "wires": [
+            [
+                "faf4527ffd0e7239"
+            ]
+        ]
+    },
+    {
+        "id": "faf4527ffd0e7239",
+        "type": "debug",
+        "z": "2a9722bcf1119b04",
+        "name": "debug: error",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 580,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "593135b0194014fe",
+        "type": "inject",
+        "z": "2a9722bcf1119b04",
+        "name": "",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 1850,
+        "y": 1340,
+        "wires": [
+            [
+                "dd3032ca9c0debc7"
+            ]
+        ]
+    },
+    {
+        "id": "3044d1f65e8d5b43",
+        "type": "debug",
+        "z": "2a9722bcf1119b04",
+        "name": "debug 111",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 450,
+        "y": 1900,
+        "wires": []
+    },
+    {
+        "id": "6f53fdb424429f3b",
+        "type": "debug",
+        "z": "2a9722bcf1119b04",
+        "name": "debug 112",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 610,
+        "y": 1920,
+        "wires": []
+    },
+    {
+        "id": "34744504f2e121fc",
+        "type": "debug",
+        "z": "2a9722bcf1119b04",
+        "name": "debug 113",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1310,
+        "y": 1940,
+        "wires": []
+    },
+    {
+        "id": "286dd0fb7f0e8f85",
+        "type": "debug",
+        "z": "2a9722bcf1119b04",
+        "name": "debug 118",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1050,
+        "y": 1640,
+        "wires": []
+    },
+    {
+        "id": "26bfc7937a8a5935",
+        "type": "debug",
+        "z": "2a9722bcf1119b04",
+        "name": "debug 125",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 690,
+        "y": 1380,
+        "wires": []
+    },
+    {
+        "id": "72c4798a7836db75",
+        "type": "debug",
+        "z": "2a9722bcf1119b04",
+        "name": "debug 126",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1950,
+        "y": 1380,
+        "wires": []
+    },
+    {
+        "id": "5496fdb146d38972",
+        "type": "debug",
+        "z": "2a9722bcf1119b04",
+        "name": "debug 127",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1310,
+        "y": 1360,
+        "wires": []
+    },
+    {
+        "id": "7e0f1bd3c58f1223",
+        "type": "debug",
+        "z": "2a9722bcf1119b04",
+        "name": "debug 128",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2170,
+        "y": 1380,
+        "wires": []
+    },
+    {
+        "id": "b79e1239b7f08b61",
+        "type": "change",
+        "z": "dfb0f8c282e0d8d5",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "variables",
+                "pt": "msg",
+                "to": "\t    {\t    \"op\":payload.{\t        \"id\": op.run_op_id,\t        \"patch\":{\t            \"actualQuantity\": total,\t            \"actualRate\": rate,\t            \"actualCycleTime\": $ceil(3600000/rate),\t            \"actualEndDate\": comp ? $now() : null,\t            \"actualCost\": cost\t        }\t    },\t    \"run\": payload.{\t        \"id\": op.run_id,\t        \"patch\": {\t            \"actualCost\": total_cost + cost\t        }\t    }\t}\t",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "op",
+                "pt": "flow",
+                "to": "(\t    $f := $flowContext('op');\t    $op := $merge([$f, {$string(payload.op.run_op_id): payload }])\t\t)",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "$string(payload.op.run_op_id)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 820,
+        "y": 460,
+        "wires": [
+            [
+                "8d9b6b6f02cf7441",
+                "62a5460fccb04df9"
+            ]
+        ]
+    },
+    {
+        "id": "8d9b6b6f02cf7441",
+        "type": "graphql",
+        "z": "dfb0f8c282e0d8d5",
+        "name": "update ops",
+        "graphql": "9fa36512b664b791",
+        "format": "text",
+        "template": "mutation(\n  $op:UpdateRunOperationInput!,\n  $run: UpdateRunInput!\n  ){\n  updateRunOperation(input:$op){\n    runOperation{id sequenceNumber actualRate actualCost quantity actualQuantity code run{runOperations{edges{node{id sequenceNumber}}}}}\n  }\n  updateRun(input:$run){\n    run{id actualCost}\n  }\n}",
+        "syntax": "plain",
+        "token": "",
+        "showDebug": true,
+        "x": 1030,
+        "y": 460,
+        "wires": [
+            [
+                "6773621de756d12f",
+                "d20786f59245d116"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "6773621de756d12f",
+        "type": "switch",
+        "z": "dfb0f8c282e0d8d5",
+        "name": "if final",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "jsonata_exp",
+                "v": "(\t    $id := payload.graphql.updateRunOperation.runOperation.id;\t    $f := payload.graphql.updateRunOperation.runOperation.run.runOperations.edges^(node.sequenceNumber).node.id;\t    $id = $f[-1]\t  \t)",
+                "vt": "jsonata"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1230,
+        "y": 460,
+        "wires": [
+            [
+                "94baaf3d3b3058af"
+            ],
+            [
+                "f364654346478440",
+                "9dad5098cf2ee37b"
+            ]
+        ]
+    },
+    {
+        "id": "94baaf3d3b3058af",
+        "type": "change",
+        "z": "dfb0f8c282e0d8d5",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "variables",
+                "pt": "msg",
+                "to": "payload.{\t    \"run\":{\t        \"id\":op.run_id,\t        \"patch\":{\t            \"completedQuantity\": total,\t            \"status\": comp ? \"completed\" : \"started\",\t            \"actualEndDate\": comp ? $now() : null\t        }\t    },\t    \"wo\":{\t        \"id\":op.run_wo_id,\t        \"patch\":{\t            \"completedQuantity\": total,\t            \"status\": comp ? \"completed\" : \"started\",\t            \"actualEndDate\": comp ? $now() : null\t        }\t    }\t}\t",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "(\t   $op := payload.graphql.updateRunOperation.runOperation;\t   $op.{\t       \"final\":false,\t       \"comp\": actualQuantity = quantity,\t       \"actual_rate\": actualRate,\t       \"prod_count\": actualQuantity,\t       \"run_op_id\": id,\t       \"run_op_code\": code,\t       \"cost\": actualCost,\t       \"rate\": actualRate,\t       \"total\":actualQuantity,\t       \"op\": {\t           \"id\":code   \t        }   \t    }\t)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1460,
+        "y": 460,
+        "wires": [
+            [
+                "79aa85d2b34421b9",
+                "5032bf577ad27094"
+            ]
+        ]
+    },
+    {
+        "id": "f364654346478440",
+        "type": "change",
+        "z": "dfb0f8c282e0d8d5",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "(\t    $op := payload;\t    $op.comp ? {\t            \"tagPath\": \"[default]Workstation/\" & $op.op.id,\t            \"tagValue\": {\t            \"actual_cost\": 0,\t            \"actual_rate\": 0,\t            \"prod_count\": 0.0,\t            \"scrap_count\": 0.0,\t            \"run_op_id\": \"\",\t            \"run_op_code\": \"\",\t            \"run_id\": \"\",\t            \"run_wo_id\": \"\",\t            \"run_wo_qty\": \"\",\t            \"rate\": 0.0,\t            \"cost\": 0.0,\t            \"start\": \"\",\t            \"cost_hr\": 0.0\t        }\t    } : {\t        \"tagPath\": \"[default]Workstation/\" & $op.op.id,\t        \"tagValue\": $op.{\t            \t            \"actual_cost\": $number(cost),\t            \"actual_rate\": rate,\t            \"prod_count\": total,\t            \"scrap_count\": 0.0\t        }\t    }   \t)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1480,
+        "y": 520,
+        "wires": [
+            [
+                "08cf6d22efcb7205",
+                "c5d2e0863051225e"
+            ]
+        ]
+    },
+    {
+        "id": "79aa85d2b34421b9",
+        "type": "graphql",
+        "z": "dfb0f8c282e0d8d5",
+        "name": "update run/work order",
+        "graphql": "9fa36512b664b791",
+        "format": "text",
+        "template": "mutation(\n  $wo:UpdateWorkOrderInput!,\n  $run: UpdateRunInput!\n  ){\n  updateWorkOrder(input:$wo){\n    workOrder{id}\n  }\n  updateRun(input:$run){\n    run{id}\n  }\n}",
+        "syntax": "plain",
+        "token": "",
+        "showDebug": true,
+        "x": 1700,
+        "y": 460,
+        "wires": [
+            [
+                "f364654346478440",
+                "6b8e84b8016d0723"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "08cf6d22efcb7205",
+        "type": "ignition-tag-write",
+        "z": "dfb0f8c282e0d8d5",
+        "server": "cffb28fa7aee20af",
+        "value": "",
+        "valueType": "msg.payload",
+        "tagPath": "",
+        "tagValue": "",
+        "name": "write",
+        "x": 1690,
+        "y": 520,
+        "wires": [
+            [
+                "495309245dfc4a47",
+                "0bf3232cd3ecb893"
+            ]
+        ]
+    },
+    {
+        "id": "c5d2e0863051225e",
+        "type": "debug",
+        "z": "dfb0f8c282e0d8d5",
+        "name": "debug 45",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1600,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "495309245dfc4a47",
+        "type": "debug",
+        "z": "dfb0f8c282e0d8d5",
+        "name": "debug 46",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "jsonata",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1900,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "d20786f59245d116",
+        "type": "debug",
+        "z": "dfb0f8c282e0d8d5",
+        "name": "debug 47",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1160,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "a82c7f0fde3f5d59",
+        "type": "link in",
+        "z": "dfb0f8c282e0d8d5",
+        "name": "link in 1",
+        "links": [],
+        "x": 665,
+        "y": 460,
+        "wires": [
+            [
+                "0057f44cd87cf090",
+                "b79e1239b7f08b61"
+            ]
+        ]
+    },
+    {
+        "id": "0bf3232cd3ecb893",
+        "type": "link out",
+        "z": "dfb0f8c282e0d8d5",
+        "name": "link out 1",
+        "mode": "return",
+        "links": [],
+        "x": 1865,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "0057f44cd87cf090",
+        "type": "debug",
+        "z": "dfb0f8c282e0d8d5",
+        "name": "debug 48",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "62a5460fccb04df9",
+        "type": "debug",
+        "z": "dfb0f8c282e0d8d5",
+        "name": "debug 50",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 940,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "6b8e84b8016d0723",
+        "type": "debug",
+        "z": "dfb0f8c282e0d8d5",
+        "name": "debug 51",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1980,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "5032bf577ad27094",
+        "type": "debug",
+        "z": "dfb0f8c282e0d8d5",
+        "name": "debug 52",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1640,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "9dad5098cf2ee37b",
+        "type": "debug",
+        "z": "dfb0f8c282e0d8d5",
+        "name": "debug 53",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1480,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "1fcdc53f7c499c4b",
+        "type": "http in",
+        "z": "097caf162b0c901b",
+        "name": "GET /items",
+        "url": "/items",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 320,
+        "wires": [
+            [
+                "3d15aca70efff2b8"
+            ]
+        ]
+    },
+    {
+        "id": "78c57ff9e8f34355",
+        "type": "inject",
+        "z": "097caf162b0c901b",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 160,
+        "y": 240,
+        "wires": [
+            [
+                "3d15aca70efff2b8"
+            ]
+        ]
+    },
+    {
+        "id": "3d15aca70efff2b8",
+        "type": "http request",
+        "z": "097caf162b0c901b",
+        "name": "Item Request",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://172.19.0.1:8080/api/resource/Item?limit=1000",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [
+            {
+                "keyType": "Authorization",
+                "keyValue": "",
+                "valueType": "other",
+                "valueValue": "${ERP_AUTH}"
+            }
+        ],
+        "x": 290,
+        "y": 320,
+        "wires": [
+            [
+                "b87ba58286e8ebf5"
+            ]
+        ]
+    },
+    {
+        "id": "b87ba58286e8ebf5",
+        "type": "json",
+        "z": "097caf162b0c901b",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 530,
+        "y": 320,
+        "wires": [
+            [
+                "1342348ed72c943e"
+            ]
+        ]
+    },
+    {
+        "id": "1342348ed72c943e",
+        "type": "change",
+        "z": "097caf162b0c901b",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "req",
+                "pt": "flow",
+                "to": "payload.data",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 670,
+        "y": 320,
+        "wires": [
+            [
+                "5036f6d51530eea2"
+            ]
+        ]
+    },
+    {
+        "id": "5036f6d51530eea2",
+        "type": "graphql",
+        "z": "097caf162b0c901b",
+        "name": "query item",
+        "graphql": "9fa36512b664b791",
+        "format": "text",
+        "template": "query Items {\n  items{\n    edges{node{\n      itemType\n      ext\n      boms(orderBy:EFFECTIVE_DATE_DESC, first:1){\n        edges{node{\n          ext\n        }}\n      }\n      workOrders(filter:{status:{equalTo:\"completed\"}}) {\n        edges{node{\n          completedQuantity\n          runs{edges{node{\n            completedQuantity\n            plannedCost\n            actualCost\n          }}}\n        }}\n      }\n    }}\n  }\n}",
+        "syntax": "plain",
+        "token": "",
+        "showDebug": false,
+        "x": 870,
+        "y": 320,
+        "wires": [
+            [
+                "6db36a4dabeb1079"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "6db36a4dabeb1079",
+        "type": "change",
+        "z": "097caf162b0c901b",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.data.items.edges.node.(\t    $type := itemType;\t    $r := workOrders.edges[node.completedQuantity>0].node.runs.edges[node.completedQuantity>0].node;\t    $c := $sum($r.($number(actualCost)))/$sum($r.completedQuantity);\t    $m := boms.edges.node.ext.raw_material_cost;\t    $fc := function($v){\t        $exists($v)\t        ? \"$\" & $formatNumber($v, \"0.00\")\t        : \"NA\"\t    };\t    {\t        \"Name\": ext.name,\t        \"Type\": itemType = \"ASM\" ? \"Assembly\" : \"Raw Material\",\t        \"BOM\": boms.edges.node.ext.name,\t        \"Valuation\": $fc(ext.valuation_rate),\t        \"Total Cost\": $fc(boms.edges.node.ext.total_cost),\t        \"Material Cost\": $fc($m),\t        \"Operating Cost\": $fc(boms.edges.node.ext.base_operating_cost),\t        \t        \"Actual Operating Cost\": $fc($c),\t        \"Actual Material Cost\": $fc($m),\t        \"Actual Total Cost\": $fc($c + $m)\t    }\t)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1120,
+        "y": 320,
+        "wires": [
+            [
+                "4f6f9af98a4079d0"
+            ]
+        ]
+    },
+    {
+        "id": "4f6f9af98a4079d0",
+        "type": "http response",
+        "z": "097caf162b0c901b",
+        "name": "res",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1330,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "91712369c41e9dd7",
+        "type": "inject",
+        "z": "4219ae6419dd9dfd",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 420,
+        "y": 220,
+        "wires": [
+            [
+                "b929b71a37d2a5c2"
+            ]
+        ]
+    },
+    {
+        "id": "63539258b73c5b47",
+        "type": "http in",
+        "z": "4219ae6419dd9dfd",
+        "name": "GET /workstations",
+        "url": "/workstations",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 410,
+        "y": 300,
+        "wires": [
+            [
+                "b929b71a37d2a5c2"
+            ]
+        ]
+    },
+    {
+        "id": "b929b71a37d2a5c2",
+        "type": "http request",
+        "z": "4219ae6419dd9dfd",
+        "name": "Workstation Request",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://172.19.0.1:8080/api/resource/Workstation?limit=1000",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [
+            {
+                "keyType": "Authorization",
+                "keyValue": "",
+                "valueType": "other",
+                "valueValue": "${ERP_AUTH}"
+            }
+        ],
+        "x": 640,
+        "y": 300,
+        "wires": [
+            [
+                "41be868c6c4c1917"
+            ]
+        ]
+    },
+    {
+        "id": "41be868c6c4c1917",
+        "type": "json",
+        "z": "4219ae6419dd9dfd",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 810,
+        "y": 300,
+        "wires": [
+            [
+                "b8fe7bd3b5f66532"
+            ]
+        ]
+    },
+    {
+        "id": "b8fe7bd3b5f66532",
+        "type": "change",
+        "z": "4219ae6419dd9dfd",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "req",
+                "pt": "flow",
+                "to": "payload.data",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 950,
+        "y": 300,
+        "wires": [
+            [
+                "cc0cda58f486b7ec"
+            ]
+        ]
+    },
+    {
+        "id": "cc0cda58f486b7ec",
+        "type": "graphql",
+        "z": "4219ae6419dd9dfd",
+        "name": "query workstation",
+        "graphql": "9fa36512b664b791",
+        "format": "text",
+        "template": "{\n  workstations{edges{node{\n    id name\n    runOperations{edges{node{\n    \tcode \n      run{workOrderId}\n      quantity\n      actualQuantity\n      plannedCost\n      actualCost\n      plannedStartDate\n      actualStartDate\n      plannedEndDate\n      actualEndDate\n      rate\n      actualRate\n    }}}\n  }}}\n}",
+        "syntax": "plain",
+        "token": "",
+        "showDebug": false,
+        "x": 1150,
+        "y": 300,
+        "wires": [
+            [
+                "91dec203413f5ce3"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "91dec203413f5ce3",
+        "type": "change",
+        "z": "4219ae6419dd9dfd",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.data.workstations.edges.node.(\t    $ops := runOperations.edges.node;\t    $pq := $sum($ops.quantity);\t    $aq := $sum($ops.actualQuantity);\t    $avg_pr := $sum($ops.rate)/$count($ops);\t    $avg_ar := $sum($ops.actualRate)/$count($ops);\t    $avg_pc := $sum($ops.($number(plannedCost)))/$pq;\t    $avg_ac := $sum($ops.($number(actualCost)))/$aq;\t    \t    $fc := function($v){\t        $exists($v)\t        ? \"$\" & $formatNumber($v, \"0.00\")\t        : \"NA\"\t    };\t    {\t      \"Name\": id,\t      \"Average Planned Rate\": $formatNumber($avg_pr,\"0.00\") & \" units/hr\",\t      \"Average Actual Rate\": $formatNumber($avg_ar,\"0.00\") & \" units/hr\",\t      \"Average Planned Unit Time\" : $formatNumber(3600/$avg_pr,\"0\") & \" s\", \t      \"Average Actual Unit Time\" : $avg_ar = 0 or $avg_ar = null ? \"0 s\" : $formatNumber(3600/$avg_ar,\"0\") & \" s\", \t      \"Average Planned Cost\": $fc($avg_pc),\t      \"Average Actual Cost\": $avg_ar = 0 or $avg_ar = null ? \"$00:00\" : $fc($avg_ac)\t    }\t)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1380,
+        "y": 300,
+        "wires": [
+            [
+                "7a7a87091cc7198b"
+            ]
+        ]
+    },
+    {
+        "id": "7a7a87091cc7198b",
+        "type": "http response",
+        "z": "4219ae6419dd9dfd",
+        "name": "res",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1590,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "4f13c1e28165b22f",
+        "type": "http in",
+        "z": "ac8cbfc01e36b300",
+        "name": "POST /csv",
+        "url": "/csv",
+        "method": "post",
+        "upload": true,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 200,
+        "wires": [
+            [
+                "c1a4c222c3f4d90d"
+            ]
+        ]
+    },
+    {
+        "id": "c1a4c222c3f4d90d",
+        "type": "change",
+        "z": "ac8cbfc01e36b300",
+        "name": "Format Incoming/Filename",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "req.body.body",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "filename",
+                "pt": "msg",
+                "to": "\"./uploads/\" & req.body.name",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 380,
+        "y": 200,
+        "wires": [
+            [
+                "44e4cdb9686ab57d"
+            ]
+        ]
+    },
+    {
+        "id": "44e4cdb9686ab57d",
+        "type": "file",
+        "z": "ac8cbfc01e36b300",
+        "name": "Write File",
+        "filename": "filename",
+        "filenameType": "msg",
+        "appendNewline": false,
+        "createDir": true,
+        "overwriteFile": "false",
+        "encoding": "utf8",
+        "x": 580,
+        "y": 200,
+        "wires": [
+            [
+                "2f4cc5f985df4b0d"
+            ]
+        ]
+    },
+    {
+        "id": "2f4cc5f985df4b0d",
+        "type": "change",
+        "z": "ac8cbfc01e36b300",
+        "name": "Format File Payload",
+        "rules": [
+            {
+                "t": "set",
+                "p": "variables",
+                "pt": "msg",
+                "to": "{\t    \"f\": {\t        \"file\": {\t            \"name\": req.body.name,\t            \"type\": req.body.type,\t            \"ext\": req.body.body,\t            \"description\": $join([\"CSV Upload:\", req.body.type, $now(), req.body.name],\" \")\t        }\t    }\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 760,
+        "y": 200,
+        "wires": [
+            [
+                "e14c59e9893674f0"
+            ]
+        ]
+    },
+    {
+        "id": "e14c59e9893674f0",
+        "type": "graphql",
+        "z": "ac8cbfc01e36b300",
+        "name": "Create File Meta",
+        "graphql": "9fa36512b664b791",
+        "format": "handlebars",
+        "template": "mutation($f:CreateFileInput!){\n  createFile(input: $f){\n    file {id}\n  }\n}",
+        "syntax": "mustache",
+        "token": "",
+        "showDebug": false,
+        "x": 960,
+        "y": 200,
+        "wires": [
+            [
+                "f8c3b69110b2ecb5"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "f8c3b69110b2ecb5",
+        "type": "change",
+        "z": "ac8cbfc01e36b300",
+        "name": "Format CSV Payload",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "req.body.body",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1160,
+        "y": 200,
+        "wires": [
+            [
+                "dde58752d62b1f4c"
+            ]
+        ]
+    },
+    {
+        "id": "dde58752d62b1f4c",
+        "type": "csv",
+        "z": "ac8cbfc01e36b300",
+        "name": "",
+        "spec": "rfc",
+        "sep": ",",
+        "hdrin": true,
+        "hdrout": "all",
+        "multi": "mult",
+        "ret": "\\n",
+        "temp": "",
+        "skip": "0",
+        "strings": true,
+        "include_empty_strings": true,
+        "include_null_values": true,
+        "x": 1330,
+        "y": 200,
+        "wires": [
+            [
+                "48774288bb9039d4"
+            ]
+        ]
+    },
+    {
+        "id": "48774288bb9039d4",
+        "type": "switch",
+        "z": "ac8cbfc01e36b300",
+        "name": "",
+        "property": "req.body.type",
+        "propertyType": "jsonata",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "item",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "workstation",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "billofmaterial",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "workorder",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 5,
+        "x": 1470,
+        "y": 200,
+        "wires": [
+            [
+                "3bfdb05348a53c54"
+            ],
+            [
+                "fbcbd111b08bfc2f"
+            ],
+            [
+                "a877f44377c9217e"
+            ],
+            [
+                "4fce32d95ccf4418"
+            ],
+            [
+                "74592150a9977bb0",
+                "34c64114f902644d"
+            ]
+        ]
+    },
+    {
+        "id": "3bfdb05348a53c54",
+        "type": "function",
+        "z": "ac8cbfc01e36b300",
+        "name": "Upsert Items",
+        "func": "\nif (!msg.payload) {\n  throw new Error(\"Missing Item Data!\");\n}\nif (!Array.isArray(msg.payload)) {\n  msg.payload = [msg.payload]\n}\nconst items = msg.payload\nconst query = `\n  mutation($input:UpsertItemInput!){\n    upsertItem(input:$input){\n      item{id}\n    }\n  }\n`\nconst parseItems = function(i){\n  return {\n    input:{\n      item: { \n        id: i.name,\n        name: i.name,\n        externalId: i.name,\n        itemType: i.type,\n        \"description\": i.description,\n        \"cost\": i.cost,\n        \"ext\": i,\n      }\n    }\n  }\n}\nconst upserts = await Promise.all(items.map(i=>{\n  return undici.request(\"http://graphile:5999/graphql\",{\n    method: 'POST',\n    headers: {\n      'Content-Type': 'application/json',\n    },\n    body: JSON.stringify({\n        query: query,\n        variables: JSON.stringify(parseItems(i))\n    })\n  })\n}))\nconst upsertsData = await Promise.all(upserts.map(r=>r.body.json()))\n\nnode.warn({\"upsert\":upsertsData})\nmsg.payload=upsertsData;\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "undici",
+                "module": "undici"
+            }
+        ],
+        "x": 1670,
+        "y": 140,
+        "wires": [
+            [
+                "055916aa40f892d5"
+            ]
+        ]
+    },
+    {
+        "id": "fbcbd111b08bfc2f",
+        "type": "function",
+        "z": "ac8cbfc01e36b300",
+        "name": "Upsert Workstations",
+        "func": "\nif (!msg.payload) {\n  throw new Error(\"Missing Workstation Data!\");\n}\nif (!Array.isArray(msg.payload)) {\n  msg.payload = [msg.payload]\n}\nconst workstations = msg.payload;\nconst query = `\n  mutation($input:UpsertWorkstationInput!){\n    upsertWorkstation(input:$input){\n      workstation{id}\n    }\n  }\n`;\nconst parseWorkstations = function(i){\n  return {\n    input:{\n      workstation: { \n        id: i.name,\n        name: i.name,\n        externalId: i.name,\n        workstationTypeId: i.type,\n        description: i.description,\n        laborCost: i.labor,\n        consumableCost: i.consumable,\n        electricityCost: i.electricity,\n        rentCost: i.rent,\n        overheadCost: i.rent + i.consumable + i.electricity,\n        ext: i,\n      }\n    }\n  }\n};\nconst upserts = await Promise.all(workstations.map(i=>{\n  return undici.request(\"http://graphile:5999/graphql\",{\n    method: 'POST',\n    headers: {\n      'Content-Type': 'application/json',\n    },\n    body: JSON.stringify({\n        query: query,\n        variables: JSON.stringify(parseWorkstations(i))\n    })\n  })\n}));\nconst upsertsData = await Promise.all(upserts.map(r=>r.body.json()));\n\nnode.warn({\"upsert\":upsertsData});\nmsg.payload=upsertsData;\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "undici",
+                "module": "undici"
+            }
+        ],
+        "x": 1700,
+        "y": 180,
+        "wires": [
+            [
+                "055916aa40f892d5"
+            ]
+        ]
+    },
+    {
+        "id": "a877f44377c9217e",
+        "type": "function",
+        "z": "ac8cbfc01e36b300",
+        "name": "Upsert BOM/Routing",
+        "func": "\nif (!msg.payload) {\n  throw new Error(\"Missing BOM Data!\");\n}\nif (!Array.isArray(msg.payload)) {\n  msg.payload = [msg.payload]\n}\nconst parts = {\n  bom: {},\n  routing: {},\n  component: {},\n  operation: {}\n}\nmsg.payload.forEach(i=>{\n  if (!parts.bom[i.name]){\n    parts.bom[i.name] = {\n      input: {\n        bom: {\n          id: i.name,\n          externalId: i.name,\n          itemId: i.assembly,\n          routingId: i.routing,\n          description: \"\",\n          effectiveDate: new Date().toISOString(),\n          ext: i\n        }\n      }\n    }\n  }\n  if (!parts.routing[i.routing]){\n    parts.routing[i.routing] = {\n      input: {\n        routing: {\n          id: i.routing,\n          code: i.routing,\n          externalId: i.routing,\n          description: \"\",\n          ext: i\n        }\n      }\n    }\n  }\n  if (i.component && !parts.component[`${i.name}_${i.component}`]){\n    parts.component[`${i.name}_${i.component}`] = {\n      input: {\n        bomComponent: {\n          id: `${i.name}_${i.component}`,\n          externalId: `${i.name}_${i.component}`,\n          bomId: i.name,\n          itemId: i.component,\n          operationId: `${i.name}_${i.operation}`,\n          quantity: i.quantity,\n          ext: i\n        }\n      }\n    }\n  }\n  if(!parts.operation[`${i.name}_${i.operation}`]){\n    parts.operation[`${i.name}_${i.operation}`]= {\n      input:{\n        operation:{\n          id: `${i.name}_${i.operation}`,\n          externalId: `${i.name}_${i.operation}`,\n          code: i.operation,\n          routingId: i.routing,\n          sequenceNumber: i.sequence,\n          rate: i.rate,\n          workstationId: i.workstation,\n          cycleTime: i.rate === 0 ? 0 : parseInt(3600000/i.rate),\n          setupTime: 0,\n          operatorTypeId: 0,\n          description: \"\",\n          ext: i\n        }\n      }\n    }\n  }\n})\nif (Object.keys(parts.operation).length) {\n  const workstationIds = Array.from(new Set(Object.values(parts.operation)?.map(o => o.input.operation.workstationId)));\n  const workstations = {};\n  if (workstationIds.length) {\n    const workstationData = await undici.request(\"http://graphile:5999/graphql\", {\n      method: 'POST',\n      headers: {\n        'Content-Type': 'application/json',\n      },\n      body: JSON.stringify({\n        query: `query($ws:WorkstationFilter){workstations(filter:$ws){edges{node{id laborCost overheadCost}}}}`,\n        variables: JSON.stringify({\"ws\":{\"id\":{\"in\":workstationIds}}})\n      })\n    }).then( ws=> ws.body.json());\n    workstationData.data?.workstations?.edges?.map(ws=>ws.node)?.forEach(ws=>{\n      workstations[ws.id] = {\n        cost: parseFloat(ws.laborCost) + parseFloat(ws.overheadCost)\n      }\n    });\n    Object.keys(parts.operation).forEach(k=>{\n      parts.operation[k].input.operation.cost = workstations[parts.operation[k].input.operation.workstationId].cost\n      node.warn(parts.operation[k].input.operation)\n    })\n  }\n}\nconst query = {\n  bom: `\n    mutation($input:UpsertBomInput!){\n      upsertBom(input:$input){\n        bom{\n          item {id name}\n          bomComponents{edges{node{quantity item{cost}}}}\n          routing{operations{edges{node{id rate workstation{laborCost overheadCost}}}}}\n        }\n      }\n    }\n  `,\n  routing: `\n  mutation($input:UpsertRoutingInput!){\n    upsertRouting(input:$input){\n      routing{id}\n    }\n  }\n`,\n  operation: `\n  mutation($input:UpsertOperationInput!){\n    upsertOperation(input:$input){\n      operation{id}\n    }\n  }\n`,\n  component: `\n  mutation($input:UpsertBomComponentInput!){\n    upsertBomComponent(input:$input){\n      bomComponent{id}\n    }\n  }\n`,\n  item: `\n  mutation($input:UpsertItemInput!){\n    upsertItem(input:$input){\n      item{id}\n    }\n  }\n  `\n}\n\nconst upsert = async (variables, query) => {\n  const upsert =  await Promise.all(Object.values(variables).map(v => {\n    return undici.request(\"http://graphile:5999/graphql\", {\n      method: 'POST',\n      headers: {\n        'Content-Type': 'application/json',\n      },\n      body: JSON.stringify({\n        query: query,\n        variables: v\n      })\n    })\n  }));\n  return await Promise.all(upsert.map(r => r.body.json()));\n}\n\nconst data = {};\nconst errors = {\n  routing:[],\n  operation:[],\n  bom:[],\n  component:[],\n  item: []\n};\nfor (const p of Object.keys(parts)) {\n  data[p] = await upsert(parts[p], query[p]).catch(err => {\n    node.warn(err);\n    errors[p].push(err);\n    return [];\n  }\n  );\n}\n\nconst itemCosts = data?.bom?.map(b=>{\n  node.warn(b)\n  const item = b?.data.upsertBom?.bom.item;\n  const componentCost = b.data?.upsertBom?.bom.bomComponents?.edges.reduce((a,c)=>(a+c.node?.quantity ?? 0 * parseFloat(c.node?.item?.cost ?? 0)),0) ?? 0;\n  const operationCost = b.data?.upsertBom?.bom.routing?.operations?.edges?.reduce((a,c)=>{\n    if (c.node?.rate ?? 0 === 0 ) {return a} \n    return a + (parseFloat(c.node?.laborCost ?? 0) + parseFloat(c.node?.overheadCost ?? 0))/ c.node.rate\n  },0) ?? 0;\n  return {\n      input: {\n        item: {\n          id: item.id,\n          name: item.name,\n          cost: componentCost + operationCost\n        }\n      }\n    }\n})\n\n// data[\"routing\"] = await upsert(parts[\"routing\"], query[\"routing\"]).catch(err => {\n//   node.warn(err);\n//   errors.routing.push(err);\n//   return [];\n// }\n// );\n// data[\"operation\"] = await upsert(parts[\"operation\"], query[\"operation\"]).catch(err => {\n//   node.warn(err);\n//   errors.operation.push(err);\n//   return [];\n// });\n// data[\"bom\"] = await upsert(parts[\"bom\"], query[\"bom\"]).catch(err => {\n//   node.warn(err);\n//   errors.bom.push(err);\n//   return [];\n// });\n// data[\"component\"] = await upsert(parts[\"component\"], query[\"component\"]).catch(err => {\n//   node.warn(err);\n//   errors.component.push(err);\n//   return [];\n// });\ndata[\"item\"] = await upsert(itemCosts, query[\"item\"]).catch(err => {\n  node.warn(err);\n  errors.item.push(err);\n  return [];\n});\n\nmsg.payload={\n   parts,\n   data,\n   errors\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "undici",
+                "module": "undici"
+            }
+        ],
+        "x": 1700,
+        "y": 220,
+        "wires": [
+            [
+                "055916aa40f892d5",
+                "1f9dabb3f39c2ae9"
+            ]
+        ]
+    },
+    {
+        "id": "055916aa40f892d5",
+        "type": "http response",
+        "z": "ac8cbfc01e36b300",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1990,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "3046401a10c51d4d",
+        "type": "catch",
+        "z": "ac8cbfc01e36b300",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 1480,
+        "y": 60,
+        "wires": [
+            [
+                "56cdbb6705941d84",
+                "dfcf7e9770f2d644"
+            ]
+        ]
+    },
+    {
+        "id": "56cdbb6705941d84",
+        "type": "change",
+        "z": "ac8cbfc01e36b300",
+        "name": "Format Error/500",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "error",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "statusCode",
+                "pt": "msg",
+                "to": "500",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1690,
+        "y": 60,
+        "wires": [
+            [
+                "055916aa40f892d5"
+            ]
+        ]
+    },
+    {
+        "id": "6e94a226b44d10e0",
+        "type": "inject",
+        "z": "ac8cbfc01e36b300",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 120,
+        "wires": [
+            [
+                "c1a4c222c3f4d90d"
+            ]
+        ]
+    },
+    {
+        "id": "dfcf7e9770f2d644",
+        "type": "debug",
+        "z": "ac8cbfc01e36b300",
+        "name": "CATCH ALL",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1680,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "74592150a9977bb0",
+        "type": "debug",
+        "z": "ac8cbfc01e36b300",
+        "name": "debug 100",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1670,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "4fce32d95ccf4418",
+        "type": "function",
+        "z": "ac8cbfc01e36b300",
+        "name": "Upsert Work Order",
+        "func": "\nif (!msg.payload) {\n  throw new Error(\"Missing Data\", {cause: \"Missing Work Order Data\", details:msg});\n}\nif (!Array.isArray(msg.payload)) {\n  msg.payload = [msg.payload]\n}\nconst error = {\n  workOrder: [],\n  run: [],\n  runOperation: []\n}\nconst data = {\n  workOrder: [],\n  run: [],\n  runOperation: []\n};\nconst workOrders = {};\ntry {\n  msg.payload.forEach(i=>{\n    const wo = i.workorder.trim()\n    if (!workOrders[wo]){\n      workOrders[wo] = {\n        input: {\n          workOrder: {\n            id: wo,\n            externalId: wo,\n            itemId: i.assembly?.trim(),\n            bomId: i.bom?.trim(),\n            routingId: i.routing?.trim(),\n            quantity: i.quantity,\n            completedQuantity:0,\n            plannedStartDate: new Date(i.start?.trim() ?? null).toISOString(),\n            plannedEndDate: new Date(i.end?.trim() ?? null).toISOString(),\n            ext: i\n          }\n        }\n      }\n    }\n  })\n  const query = {\n    workOrder: `\n      mutation($input:UpsertWorkOrderInput!){\n        upsertWorkOrder(input:$input){\n          workOrder{\n            id\n            quantity\n            plannedStartDate\n            status\n            item{id}\n            runs{edges{node{id status}}}  \n            routing{id operations{edges{node{\n              sequenceNumber\n              workstation{id laborCost overheadCost}\n              code\n              rate\n              cycleTime\n              setupTime\n            }}}}\n          }\n        }\n      }\n    `,\n    run: `\n    mutation($input:UpsertRunInput!){\n      upsertRun(input:$input){\n        run{id}\n      }\n    }\n  `,\n    runOperation: `\n    mutation($input:UpsertRunOperationInput!){\n      upsertRunOperation(input:$input){\n        runOperation{id}\n      }\n    }\n  `\n  }\n\n  const upsert = async (variables, query) => {\n    node.warn(query)\n    const upserts =  await Promise.all(Object.values(variables).map(v => {\n    node.warn(v);\n      return undici.request(\"http://graphile:5999/graphql\", {\n        method: 'POST',\n        headers: {\n          'Content-Type': 'application/json',\n        },\n        body: JSON.stringify({\n          query: query,\n          variables: v\n        })\n      })\n    })).catch(err=>node.warn(err));\n    return await Promise.all(upserts.map(r => r.body.json()));\n  }\n\n  const workOrderData = await upsert(workOrders, query[\"workOrder\"]).catch(err => {\n    node.error(err);\n    error.workOrder.push(err);\n    return [];\n  });\n  workOrderData.forEach(d=>{\n    if(d.errors?.length) {\n      error.workOrder.push(...d.errors)\n    } else {\n      data.workOrder.push(d)\n    }\n  });\n  node.warn(data)\n  const runs = {};\n  const runOperations = {};\n  if (!error.workOrder.length) {\n    data.workOrder.forEach(d=>{\n      if(d.errors?.length ?? false) {\n        error.workOrder.push(...d.errors);\n      } else {\n        const wo = d.data.upsertWorkOrder.workOrder;\n        let plannedCost = 0;\n        let opStart = wo.plannedStartDate;\n        wo.routing?.operations.edges.forEach(op => {\n          const r = op?.node?.rate ?? 0;\n          const cost = parseFloat(op?.node?.workstation?.laborCost ?? 0) + parseFloat(op?.node?.workstation?.overheadCost ?? 0);\n          const opEnd = op.node.rate===0 ? opStart : new Date((wo.quantity/op.node.rate)*3600000 + new Date(opStart).getTime()).toISOString();\n          runOperations[`${wo.id}-${op.node.sequenceNumber}`] = {\n            input: {\n              runOperation: {\n                id: `${wo.id}-${op.node.sequenceNumber}`,\n                code: `${wo.id}-${op.node.sequenceNumber}`,\n                sequenceNumber: op.node.sequenceNumber,\n                runId: `${wo.id}_0`,\n                externalId: `${wo.id}-${op.node.sequenceNumber}`,\n                routingId: wo.routing.id,\n                workstationId: op.node.workstation.id,\n                operatorTypeId: 0,\n                description: \"\",\n                quantity: wo.quantity,\n                rate: op.node.rate,\n                actualRate: 0,\n                cycleTime: op.node.cycleTime,\n                actualCycleTime: 0,\n                setupTime: op.node.setupTime,\n                plannedStartDate: opStart,\n                plannedEndDate: opEnd,\n                plannedCost: cost\n              }\n            }\n          }\n          opStart = opEnd;\n          plannedCost += r === 0 ? 0 : (wo.quantity / r) * cost\n        });\n        runs[wo.id] = {\n          input:{\n            run:{\n              ...workOrders[wo.id].input.workOrder,\n              workOrderId: wo.id,\n              plannedCost: plannedCost.toFixed(5),\n              id: `${wo.id}_0`\n            }\n          }\n        }\n      }\n        \n    })\n  };\n  const runData = await upsert(runs, query[\"run\"]).catch(err => {\n    node.error(err);\n    error.run.push(err);\n    return [];\n  });\n  runData.forEach(d=>{\n    if(d.errors?.length) {\n      error.run.push(...d.errors)\n    } else {\n      data.run.push(d)\n    }\n  })\n  const runOperationData = await upsert(runOperations, query[\"runOperation\"]).catch(err => {\n    node.error(err);\n    error.runOperation.push(err);\n    return [];\n  });\n  runOperationData.forEach(d=>{\n    if(d.errors?.length) {\n      error.runOperation.push(...d.errors)\n    } else {\n      data.runOperation.push(d)\n    }\n  })\n  msg.payload={\n    data,\n    error,\n    workOrders,\n    runs,\n    runOperations\n  };\nreturn msg;\n} catch(err) {\n  throw new Error(\"Unexpected Termination\", {cause: err.message, details:{msg,err}})\n}",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "undici",
+                "module": "undici"
+            }
+        ],
+        "x": 1690,
+        "y": 260,
+        "wires": [
+            [
+                "055916aa40f892d5",
+                "6b069ed8a40bc0d0"
+            ]
+        ]
+    },
+    {
+        "id": "1f9dabb3f39c2ae9",
+        "type": "debug",
+        "z": "ac8cbfc01e36b300",
+        "name": "BOM OUTPUT",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2020,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "6b069ed8a40bc0d0",
+        "type": "debug",
+        "z": "ac8cbfc01e36b300",
+        "name": "WO OUTPUT",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2020,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "34c64114f902644d",
+        "type": "http response",
+        "z": "ac8cbfc01e36b300",
+        "name": "NOT FOUND",
+        "statusCode": "400",
+        "headers": {},
+        "x": 1670,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "416308f8563e43cc",
+        "type": "http in",
+        "z": "d9ca7fa55a92d921",
+        "name": "",
+        "url": "/test",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 560,
+        "y": 480,
+        "wires": [
+            [
+                "e1967624febd0427"
+            ]
+        ]
+    },
+    {
+        "id": "be3b9b6903d44ad1",
+        "type": "http response",
+        "z": "d9ca7fa55a92d921",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1030,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "e1967624febd0427",
+        "type": "function",
+        "z": "d9ca7fa55a92d921",
+        "name": "function 6",
+        "func": "const upserts = await Promise.all([1,2,3].map(i => {\n    return undici.request(\"http://graphile:5999/graphql\", {\n        method: 'POST',\n        headers: {\n            'Content-Type': 'application/json',\n        },\n        body: JSON.stringify({\n            query: `mutation{upsertItem(input:{\"item\":{\"name\":\"123\"}}){}}`,\n            variables: {}\n        })\n    })\n}));\nconst upsertsData = await Promise.all(upserts.map(r => r.body.json()));\n\nmsg.payload = upsertsData;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "undici",
+                "module": "undici"
+            }
+        ],
+        "x": 820,
+        "y": 480,
+        "wires": [
+            [
+                "be3b9b6903d44ad1"
+            ]
+        ]
+    },
+    {
+        "id": "afd3ee2b7659ee2b",
+        "type": "catch",
+        "z": "d9ca7fa55a92d921",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 580,
+        "y": 560,
+        "wires": [
+            [
+                "d811b0296871a084",
+                "c4125683a212d184"
+            ]
+        ]
+    },
+    {
+        "id": "d811b0296871a084",
+        "type": "debug",
+        "z": "d9ca7fa55a92d921",
+        "name": "debug 98",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1060,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "c4125683a212d184",
+        "type": "function",
+        "z": "d9ca7fa55a92d921",
+        "name": "function 7",
+        "func": "msg.statusCode = 500\nmsg.payload = msg.error\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 560,
+        "wires": [
+            [
+                "be3b9b6903d44ad1"
+            ]
+        ]
+    },
+    {
+        "id": "44d9cbae286db38d",
+        "type": "inject",
+        "z": "d9ca7fa55a92d921",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 580,
+        "y": 380,
+        "wires": [
+            [
+                "e1967624febd0427"
+            ]
+        ]
+    },
+    {
+        "id": "ec67721d3d0c7e5f",
+        "type": "inject",
+        "z": "d9ca7fa55a92d921",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "[\"A-001\",\"A-002\"].{\t    \"id\": $\t}",
+        "payloadType": "jsonata",
+        "x": 230,
+        "y": 100,
+        "wires": [
+            [
+                "cd6f909adb35b7da"
+            ]
+        ]
+    },
+    {
+        "id": "cd6f909adb35b7da",
+        "type": "split",
+        "z": "d9ca7fa55a92d921",
+        "name": "",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "property": "payload",
+        "x": 370,
+        "y": 100,
+        "wires": [
+            [
+                "e6594b9b0d950862"
+            ]
+        ]
+    },
+    {
+        "id": "a7d3da9020263bad",
+        "type": "graphql",
+        "z": "d9ca7fa55a92d921",
+        "name": "item",
+        "graphql": "9fa36512b664b791",
+        "format": "text",
+        "template": "query($id:String!){\n  item(id:$id) {\n    id\n  }\n}",
+        "syntax": "plain",
+        "token": "",
+        "showDebug": false,
+        "x": 610,
+        "y": 100,
+        "wires": [
+            [
+                "724672d4821797d7",
+                "413b1e727be2ed79"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "e6594b9b0d950862",
+        "type": "change",
+        "z": "d9ca7fa55a92d921",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "variables",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "test",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 280,
+        "y": 180,
+        "wires": [
+            [
+                "a7d3da9020263bad",
+                "5776165b6921d9d3"
+            ]
+        ]
+    },
+    {
+        "id": "724672d4821797d7",
+        "type": "join",
+        "z": "d9ca7fa55a92d921",
+        "name": "",
+        "mode": "auto",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "useparts": false,
+        "accumulate": "false",
+        "timeout": "",
+        "count": "",
+        "reduceRight": false,
+        "x": 650,
+        "y": 160,
+        "wires": [
+            [
+                "657a1897b9734368"
+            ]
+        ]
+    },
+    {
+        "id": "413b1e727be2ed79",
+        "type": "debug",
+        "z": "d9ca7fa55a92d921",
+        "name": "debug 103",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 770,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "657a1897b9734368",
+        "type": "debug",
+        "z": "d9ca7fa55a92d921",
+        "name": "debug 104",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 750,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "5776165b6921d9d3",
+        "type": "debug",
+        "z": "d9ca7fa55a92d921",
+        "name": "debug 105",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 430,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "4d937b20cf6e640a",
+        "type": "com.autana.jsonata",
+        "z": "d9ca7fa55a92d921",
+        "name": "",
+        "template": "{\t   \"topic\": topic,\t   \"payload\": payload\t}",
+        "templateType": "jsonata",
+        "target": "payload",
+        "targetType": "msg",
+        "x": 300,
+        "y": 360,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "0ada58579856a98f",
+        "type": "http in",
+        "z": "c01207d401bae1df",
+        "name": "GET workstation/op/:id",
+        "url": "workstation/op/:id",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 180,
+        "y": 300,
+        "wires": [
+            [
+                "bc4687a9c3dfbcca"
+            ]
+        ]
+    },
+    {
+        "id": "bc4687a9c3dfbcca",
+        "type": "change",
+        "z": "c01207d401bae1df",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "variables",
+                "pt": "msg",
+                "to": "{\"op\":req.params.id}",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "req.params.id",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 380,
+        "y": 300,
+        "wires": [
+            [
+                "02bb1c81bc20a381"
+            ]
+        ]
+    },
+    {
+        "id": "02bb1c81bc20a381",
+        "type": "graphql",
+        "z": "c01207d401bae1df",
+        "name": "query op",
+        "graphql": "9fa36512b664b791",
+        "format": "handlebars",
+        "template": "query ($op:String!){\n  runOperation(id:$op){\n    id\n    workstationId\n    quantity\n    actualQuantity\n    rate\n    actualRate\n    plannedCost\n    actualCost\n    actualStartDate\n    actualEndDate\n    run {itemId}\n    ext\n  }\n}",
+        "syntax": "mustache",
+        "token": "",
+        "showDebug": false,
+        "x": 560,
+        "y": 300,
+        "wires": [
+            [
+                "3a1a224ecde467c7"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "3a1a224ecde467c7",
+        "type": "switch",
+        "z": "c01207d401bae1df",
+        "name": "",
+        "property": "payload.data.runOperation.actualStartDate",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "null"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 710,
+        "y": 300,
+        "wires": [
+            [
+                "969c55ce75003eb8"
+            ],
+            [
+                "4e5bf2db22355d3e"
+            ]
+        ]
+    },
+    {
+        "id": "969c55ce75003eb8",
+        "type": "change",
+        "z": "c01207d401bae1df",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 920,
+        "y": 240,
+        "wires": [
+            [
+                "e404e26469952072"
+            ]
+        ]
+    },
+    {
+        "id": "e404e26469952072",
+        "type": "http response",
+        "z": "c01207d401bae1df",
+        "name": "res",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1110,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "bc24bc929e41f4e0",
+        "type": "http response",
+        "z": "c01207d401bae1df",
+        "name": "res",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1070,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "ca87afc2fe0c10bc",
+        "type": "catch",
+        "z": "c01207d401bae1df",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 140,
+        "y": 380,
+        "wires": [
+            [
+                "c7df7b2ca0d018f2",
+                "5cf5e0d4c626c1a2"
+            ]
+        ]
+    },
+    {
+        "id": "c7df7b2ca0d018f2",
+        "type": "http response",
+        "z": "c01207d401bae1df",
+        "name": "res",
+        "statusCode": "500",
+        "headers": {},
+        "x": 310,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "5cf5e0d4c626c1a2",
+        "type": "debug",
+        "z": "c01207d401bae1df",
+        "name": "CATCH ALL",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 340,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "4e5bf2db22355d3e",
+        "type": "change",
+        "z": "c01207d401bae1df",
+        "name": "calc",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.data.runOperation.(\t    $f_time := function($t){\t        $not($exists($t)) or $t = null or $t = 0 ? \"00:00\" :\t        $floor($t) & \":\" & $pad($string($floor(($t - $floor($number($t)))*60)),2,\"0\")\t    };\t    $time := $not($exists(actualStartDate)) or actualStartDate = null ? 0 : $toMillis($now())-$toMillis(actualStartDate);\t    $time_hrs := $time/3600000;\t    $ideal := rate*$time_hrs;\t    $cost := $number(plannedCost)/quantity;\t    $actual_cost := actualCost = null or actualQuantity = null ? 0 :$number(actualCost)/actualQuantity;\t    {\t        \"item\":run.itemId,\t        \"quantity\": quantity,\t        \"actualQuantity\": $round(actualQuantity,2),\t        \"quantityDiff\": $round(actualQuantity-$ideal,2),\t        \"idealQuantity\":$round($ideal,2),\t        \"perf\": $round(actualQuantity/$ideal *100,0),\t        \"cost\": $round($actual_cost,2),\t        \"costDiff\": $round($cost - $actual_cost,2),\t        \"time\": $f_time($time_hrs),\t        \"timeDiff\": $time_hrs = 0 or $time_hrs = null ? \"00:00\" : $f_time(actualQuantity/rate-$time_hrs),\t        \"color\": actualQuantity/$ideal >=1 ? \"#00ff00\" : actualQuantity/$ideal >=0.75 ? \"#F4C430\" : \"#ff0000\"\t    }\t)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 890,
+        "y": 300,
+        "wires": [
+            [
+                "bc24bc929e41f4e0",
+                "3b0c792b8dcb1ade"
+            ]
+        ]
+    },
+    {
+        "id": "3b0c792b8dcb1ade",
+        "type": "debug",
+        "z": "c01207d401bae1df",
+        "name": "debug 124",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 870,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "90877d16948fac65",
+        "type": "inject",
+        "z": "ad618680ddb90735",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 260,
+        "wires": [
+            [
+                "4defdabcfceca9ec"
+            ]
+        ]
+    },
+    {
+        "id": "d32feb57ae3da670",
+        "type": "http in",
+        "z": "ad618680ddb90735",
+        "name": "GET /wo",
+        "url": "/wo",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 100,
+        "y": 340,
+        "wires": [
+            [
+                "4defdabcfceca9ec"
+            ]
+        ]
+    },
+    {
+        "id": "4defdabcfceca9ec",
+        "type": "http request",
+        "z": "ad618680ddb90735",
+        "name": "Work Order Request",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://172.19.0.1:8080/api/resource/Work%20Order?fields=%5B%22name%22%2C%22status%22%2C%22production_item%22%2C%22bom_no%22%2C%22qty%22%2C%22planned_operating_cost%22%5D&limit=100",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [
+            {
+                "keyType": "Authorization",
+                "keyValue": "",
+                "valueType": "other",
+                "valueValue": "${ERP_AUTH}"
+            }
+        ],
+        "x": 300,
+        "y": 340,
+        "wires": [
+            [
+                "e1779bd4e2661cf7"
+            ]
+        ]
+    },
+    {
+        "id": "e1779bd4e2661cf7",
+        "type": "json",
+        "z": "ad618680ddb90735",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 510,
+        "y": 340,
+        "wires": [
+            [
+                "b7a63471a7dd115f"
+            ]
+        ]
+    },
+    {
+        "id": "b7a63471a7dd115f",
+        "type": "change",
+        "z": "ad618680ddb90735",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "req",
+                "pt": "flow",
+                "to": "payload.data",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "wo",
+                "pt": "flow",
+                "to": "payload.data.{\t    \"id\":name,\t    \"asm\": production_item,\t    \"bom\": bom_no,\t    \"qty\": qty,\t    \"operating_cost\": planned_operating_cost,\t    \"bom_cost\": $sum(required_items.amount),\t    \"total_cost\": planned_operating_cost + $sum(required_items.amount),\t    \"items\": required_items.{\t        \"id\": item_name,\t        \"qty\": required_qty/%.qty,\t        \"total_qty\": required_qty,\t        \"rate\": rate,\t        \"amount\": amount\t    },\t    \"operations\": operations.{\t        \"id\": operation,\t        \"status\": status,\t        \"workstation\":workstation,\t        \"workstation_type\": workstation_type,\t        \"sequence\": sequence_id,\t        \"rate\": hour_rate,\t        \"time\": time_in_mins,\t        \"planned_cost\": planned_operating_cost\t    }\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 660,
+        "y": 340,
+        "wires": [
+            [
+                "8a3324fe72062fd0"
+            ]
+        ]
+    },
+    {
+        "id": "8a3324fe72062fd0",
+        "type": "graphql",
+        "z": "ad618680ddb90735",
+        "name": "query workorders",
+        "graphql": "9fa36512b664b791",
+        "format": "text",
+        "template": "{\n  workOrders{\n    edges{node{\n      id \n      itemId\n      bomId\n      routingId\n      quantity\n      completedQuantity\n      plannedStartDate\n      plannedEndDate\n      actualStartDate\n      actualEndDate\n      status\n      runs{edges{node{completedQuantity actualCost}}}\n    }}\n  }\n}",
+        "syntax": "plain",
+        "token": "",
+        "showDebug": false,
+        "x": 870,
+        "y": 340,
+        "wires": [
+            [
+                "46f6f2f1604ebd07"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "46f6f2f1604ebd07",
+        "type": "change",
+        "z": "ad618680ddb90735",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "$flowContext('req').(\t    $id := name;\t    $wo := $$.payload.data.workOrders.edges.node[id=$id];\t    $s := status;\t    {\t        \"id\":$id,\t        \"status\": $exists($wo.status) ? $uppercase($wo.status): $uppercase($s),\t        \"item\": production_item,\t        \"bom\": bom_no,\t        \"qty\": qty,\t        \"planned_cost\": planned_operating_cost,\t        \"actual_cost\": $exists($wo.runs.edges.node) ? $sum([$wo.runs.edges.node.actualCost.($=null ? 0 : $number($))]) : 0,\t        \"completed_qty\": $exists($wo.completedQuantity) ? $wo.completedQuantity : 0,\t        \"wo\": $wo,\t        \"sync\": $exists($wo)\t    }\t)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1100,
+        "y": 340,
+        "wires": [
+            [
+                "90604ccf16c04054"
+            ]
+        ]
+    },
+    {
+        "id": "90604ccf16c04054",
+        "type": "http response",
+        "z": "ad618680ddb90735",
+        "name": "res",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1310,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "f332538f7e8844b6",
+        "type": "catch",
+        "z": "ad618680ddb90735",
+        "name": "",
+        "scope": null,
+        "uncaught": true,
+        "x": 1080,
+        "y": 440,
+        "wires": [
+            [
+                "5be17b2825d2a3ce"
+            ]
+        ]
+    },
+    {
+        "id": "5be17b2825d2a3ce",
+        "type": "http response",
+        "z": "ad618680ddb90735",
+        "name": "res",
+        "statusCode": "500",
+        "headers": {},
+        "x": 1230,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "2fc1cad1d7d2018d",
+        "type": "graphql",
+        "z": "ad618680ddb90735",
+        "name": "query workorders",
+        "graphql": "9fa36512b664b791",
+        "format": "text",
+        "template": "{\n  workOrders{\n    edges{node{\n      id \n      itemId\n      bomId\n      routingId\n      quantity\n      completedQuantity\n      plannedStartDate\n      plannedEndDate\n      actualStartDate\n      actualEndDate\n      status\n      runs{edges{node{completedQuantity actualCost}}}\n    }}\n  }\n}",
+        "syntax": "plain",
+        "token": "",
+        "showDebug": false,
+        "x": 290,
+        "y": 540,
+        "wires": [
+            [
+                "26edc4ade3fcbff4"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "26edc4ade3fcbff4",
+        "type": "change",
+        "z": "ad618680ddb90735",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "wo",
+                "pt": "msg",
+                "to": "payload.data.workOrder.edges.node",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 290,
+        "y": 600,
+        "wires": [
+            [
+                "57a27a1e2b6a09f9"
+            ]
+        ]
+    },
+    {
+        "id": "57a27a1e2b6a09f9",
+        "type": "http request",
+        "z": "ad618680ddb90735",
+        "name": "ERPNext: Work Order Request",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://172.19.0.1:8080/api/resource/Work%20Order?fields=%5B%22name%22%2C%22status%22%2C%22production_item%22%2C%22bom_no%22%2C%22qty%22%2C%22planned_operating_cost%22%5D&limit=100",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [
+            {
+                "keyType": "Authorization",
+                "keyValue": "",
+                "valueType": "other",
+                "valueValue": "${ERP_AUTH}"
+            }
+        ],
+        "x": 550,
+        "y": 600,
+        "wires": [
+            [
+                "81d0469ced47dfc6"
+            ]
+        ]
+    },
+    {
+        "id": "ab8364ab420c8039",
+        "type": "debug",
+        "z": "ad618680ddb90735",
+        "name": "debug 121",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1150,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "213a7e061ba01257",
+        "type": "inject",
+        "z": "ad618680ddb90735",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 100,
+        "y": 440,
+        "wires": [
+            [
+                "2fc1cad1d7d2018d"
+            ]
+        ]
+    },
+    {
+        "id": "14c481d16f45242e",
+        "type": "catch",
+        "z": "ad618680ddb90735",
+        "name": "Catch ERPNext WO Request",
+        "scope": [
+            "57a27a1e2b6a09f9"
+        ],
+        "uncaught": false,
+        "x": 560,
+        "y": 700,
+        "wires": [
+            [
+                "81d0469ced47dfc6"
+            ]
+        ]
+    },
+    {
+        "id": "81d0469ced47dfc6",
+        "type": "json",
+        "z": "ad618680ddb90735",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 790,
+        "y": 600,
+        "wires": [
+            [
+                "ae25b5ec29e60842"
+            ]
+        ]
+    },
+    {
+        "id": "ae25b5ec29e60842",
+        "type": "change",
+        "z": "ad618680ddb90735",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "(// $exists(error)  ? wo.{\t    \t//     } : payload.data\t\t$flowContext('req').(\t    $id := name;\t    $wo := $$.payload.data.workOrders.edges.node[id=$id];\t    $s := status;\t    {\t        \"id\":$id,\t        \"status\": $exists($wo.status) ? $uppercase($wo.status): $uppercase($s),\t        \"item\": production_item,\t        \"bom\": bom_no,\t        \"qty\": qty,\t        \"planned_cost\": planned_operating_cost,\t        \"actual_cost\": $exists($wo.runs.edges.node) ? $sum([$wo.runs.edges.node.actualCost.($=null ? 0 : $number($))]) : 0,\t        \"completed_qty\": $exists($wo.completedQuantity) ? $wo.completedQuantity : 0,\t        \"wo\": $wo,\t        \"sync\": $exists($wo)\t    }\t)\t)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 940,
+        "y": 600,
+        "wires": [
+            [
+                "ab8364ab420c8039"
+            ]
+        ]
+    },
+    {
+        "id": "4018461d5620308e",
+        "type": "http in",
+        "z": "97492bb7d660d951",
+        "name": "POST /run/create body={wo:\"abc\"}",
+        "url": "/run/create",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 320,
+        "wires": [
+            [
+                "87f3aa7c7eef7f74"
+            ]
+        ]
+    },
+    {
+        "id": "87f3aa7c7eef7f74",
+        "type": "change",
+        "z": "97492bb7d660d951",
+        "name": "set auth/var/req",
+        "rules": [
+            {
+                "t": "set",
+                "p": "variables",
+                "pt": "msg",
+                "to": "{\"wo\":req.body.wo}",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "req",
+                "pt": "flow",
+                "to": "req",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 400,
+        "y": 320,
+        "wires": [
+            [
+                "8d2f6575f51bce7f"
+            ]
+        ]
+    },
+    {
+        "id": "8d2f6575f51bce7f",
+        "type": "graphql",
+        "z": "97492bb7d660d951",
+        "name": "query wo",
+        "graphql": "9fa36512b664b791",
+        "format": "text",
+        "template": "query wo($wo: String!) {\n  workOrder(id:$wo){\n    id\n    itemId\n    quantity\n    completedQuantity\n    plannedStartDate\n    plannedEndDate\n    status\n    ext\n    runs {\n      totalCount\n    }\n    bom {\n      id\n      bomComponents {\n        edges {\n          node {\n            quantity\n            operationId\n            item {\n              id\n              cost\n            }\n          }\n        }\n      }\n    }\n    routing {\n      id\n      operations(orderBy:SEQUENCE_NUMBER_ASC) {\n        edges {\n          node {\n            id\n            code\n            sequenceNumber\n            workstationId\n            cycleTime\n            rate\n            operatorTypeId\n          }\n        }\n      }\n    }\n  }\n}",
+        "syntax": "plain",
+        "token": "",
+        "showDebug": false,
+        "x": 560,
+        "y": 320,
+        "wires": [
+            [
+                "95b7e05b7f1c99b0"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "95b7e05b7f1c99b0",
+        "type": "switch",
+        "z": "97492bb7d660d951",
+        "name": "",
+        "property": "payload",
+        "propertyType": "jsonata",
+        "rules": [
+            {
+                "t": "jsonata_exp",
+                "v": "payload.data.workOrder.id=null\tor\tpayload.data.workOrder.runs.totalCount>0",
+                "vt": "jsonata"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 690,
+        "y": 320,
+        "wires": [
+            [
+                "8ad3ff98e6807ff5"
+            ],
+            [
+                "48b432eaf9018eb6"
+            ]
+        ]
+    },
+    {
+        "id": "8ad3ff98e6807ff5",
+        "type": "http response",
+        "z": "97492bb7d660d951",
+        "name": "response (not found or existing run)",
+        "statusCode": "400",
+        "headers": {},
+        "x": 960,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "48b432eaf9018eb6",
+        "type": "change",
+        "z": "97492bb7d660d951",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "variables",
+                "pt": "msg",
+                "to": "(\t    $wo := payload.data.workOrder;\t\t    {\t        \"r\": {\t            \"run\":$wo.{\t                \"workOrderId\": id,\t                \"quantity\": quantity,\t                \"itemId\": itemId,\t                \"bomId\": bom.id,\t                \"routingId\": routing.id,\t                \"plannedStartDate\": plannedStartDate,\t                \"plannedEndDate\": plannedEndDate,\t                \"plannedCost\": ext.planned_operating_cost,\t                \"status\": \"released\",\t                \"ext\": $\t                }\t        }\t    }\t\t)",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "wo",
+                "pt": "msg",
+                "to": "payload.data.workOrder",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 840,
+        "y": 340,
+        "wires": [
+            [
+                "dfb9f8f2852c085d"
+            ]
+        ]
+    },
+    {
+        "id": "dfb9f8f2852c085d",
+        "type": "graphql",
+        "z": "97492bb7d660d951",
+        "name": "upsert run",
+        "graphql": "9fa36512b664b791",
+        "format": "text",
+        "template": "mutation($r:UpsertRunInput!){\n  upsertRun(input:$r){\n    run{id}\n  }\n}",
+        "syntax": "plain",
+        "token": "",
+        "showDebug": false,
+        "x": 1040,
+        "y": 340,
+        "wires": [
+            [
+                "fd4a6bf9cff3a138"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "fd4a6bf9cff3a138",
+        "type": "change",
+        "z": "97492bb7d660d951",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "(\t    \t    $wo := wo;\t    $r := payload.data.upsertRun.run.id;\t    \t    [$wo.routing.operations.edges.node.(\t        $c := code;\t        $op := $wo.ext.operations[operation=$c];\t        {\t            \"runOperation\": {\t                \"id\": $r & \"_\" & sequenceNumber,\t                \"code\": code,\t                \"externalId\": $op.name,\t                \"runId\": $r,\t                \"routingId\": $wo.routing.id,\t                \"operatorTypeId\": operatorTypeId,\t                \"rate\": rate,\t                \"actualRate\": 0.0,\t                \"cycleTime\": cycleTime,\t                \"actualCycleTime\":0,\t                \"sequenceNumber\": sequenceNumber,\t                \"description\": \"\",\t                \"setupTime\": 0,\t                \"quantity\": $wo.quantity,\t                \"workstationId\": workstationId,\t                \"plannedStartDate\": $op.planned_start_time,\t                \"plannedEndDate\": $op.planned_end_time,\t                \"plannedCost\": $op.planned_operating_cost,\t                \"ext\": $merge([$,{\"wo\":$op}])\t            }   \t        }\t    )]  \t    \t)",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "routing",
+                "pt": "flow",
+                "to": "data.upsertRun.run.id",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1240,
+        "y": 340,
+        "wires": [
+            [
+                "f2f44b0b587a51da"
+            ]
+        ]
+    },
+    {
+        "id": "f2f44b0b587a51da",
+        "type": "split",
+        "z": "97492bb7d660d951",
+        "name": "split run operations",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "property": "payload",
+        "x": 1470,
+        "y": 340,
+        "wires": [
+            [
+                "4dbd554c5c8b6e0e"
+            ]
+        ]
+    },
+    {
+        "id": "4dbd554c5c8b6e0e",
+        "type": "change",
+        "z": "97492bb7d660d951",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "variables",
+                "pt": "msg",
+                "to": "{\"op\":payload}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1810,
+        "y": 340,
+        "wires": [
+            [
+                "350b12141c609613"
+            ]
+        ]
+    },
+    {
+        "id": "350b12141c609613",
+        "type": "graphql",
+        "z": "97492bb7d660d951",
+        "name": "upsert operation",
+        "graphql": "9fa36512b664b791",
+        "format": "text",
+        "template": "mutation($op:UpsertRunOperationInput!){\n  upsertRunOperation(input:$op){\n    runOperation{id}\n  }\n}",
+        "syntax": "plain",
+        "token": "",
+        "showDebug": false,
+        "x": 2040,
+        "y": 340,
+        "wires": [
+            [
+                "fcaf3a6e94e2df37"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "fcaf3a6e94e2df37",
+        "type": "join",
+        "z": "97492bb7d660d951",
+        "name": "join operations",
+        "mode": "custom",
+        "build": "array",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "payload",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "useparts": false,
+        "accumulate": false,
+        "timeout": "1",
+        "count": "",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 2280,
+        "y": 340,
+        "wires": [
+            [
+                "e729d13618619c92"
+            ]
+        ]
+    },
+    {
+        "id": "e729d13618619c92",
+        "type": "http response",
+        "z": "97492bb7d660d951",
+        "name": "response",
+        "statusCode": "200",
+        "headers": {},
+        "x": 2440,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "fbecc04e939bd2c3",
+        "type": "catch",
+        "z": "97492bb7d660d951",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 140,
+        "y": 160,
+        "wires": [
+            [
+                "278478d995c87386",
+                "44beeafafb760e65"
+            ]
+        ]
+    },
+    {
+        "id": "44beeafafb760e65",
+        "type": "debug",
+        "z": "97492bb7d660d951",
+        "name": "debug 119",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 130,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "278478d995c87386",
+        "type": "http response",
+        "z": "97492bb7d660d951",
+        "name": "HTTP 500",
+        "statusCode": "500",
+        "headers": {},
+        "x": 370,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "9db7ca18e856e266",
+        "type": "http in",
+        "z": "58a7b027e50b089e",
+        "name": "GET /wo/:id",
+        "url": "/wo/:id",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 170,
+        "y": 260,
+        "wires": [
+            [
+                "b7201f3e7e4cbb98"
+            ]
+        ]
+    },
+    {
+        "id": "b7201f3e7e4cbb98",
+        "type": "change",
+        "z": "58a7b027e50b089e",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "variables",
+                "pt": "msg",
+                "to": "{\"wo\":req.params.id}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 350,
+        "y": 260,
+        "wires": [
+            [
+                "da34d7a834e9f9d7"
+            ]
+        ]
+    },
+    {
+        "id": "da34d7a834e9f9d7",
+        "type": "graphql",
+        "z": "58a7b027e50b089e",
+        "name": "query workorders",
+        "graphql": "9fa36512b664b791",
+        "format": "text",
+        "template": "query workOrder($wo:String!){\n  workOrder(id:$wo){\n    \n      id \n      itemId\n      bomId\n      routingId\n      quantity\n      completedQuantity\n      plannedStartDate\n      plannedEndDate\n      actualStartDate\n      actualEndDate\n      status\n      runs{edges{node{\n        actualCost\n        completedQuantity\n        runOperations(orderBy:SEQUENCE_NUMBER_ASC) {edges{node{\n          id \n          sequenceNumber\n          workstationId\n          rate\n          cycleTime\n          actualQuantity\n  \t\t\t\tactualRate\n          actualCycleTime\n          plannedStartDate\n          plannedEndDate\n          actualStartDate\n          actualEndDate\n          plannedCost\n          actualCost\n          code\n        }}}\n      }}}\n\n  }\n}",
+        "syntax": "plain",
+        "token": "",
+        "showDebug": false,
+        "x": 750,
+        "y": 260,
+        "wires": [
+            [
+                "8ea74db297613611",
+                "369aa63972dcc24d"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "8ea74db297613611",
+        "type": "change",
+        "z": "58a7b027e50b089e",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.data.workOrder",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 960,
+        "y": 260,
+        "wires": [
+            [
+                "cc641dadc3e4cd4f",
+                "ddf88ebf6a3f93a0"
+            ]
+        ]
+    },
+    {
+        "id": "cc641dadc3e4cd4f",
+        "type": "http response",
+        "z": "58a7b027e50b089e",
+        "name": "res",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1270,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "8c30cfed5163dcb3",
+        "type": "catch",
+        "z": "58a7b027e50b089e",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 320,
+        "y": 100,
+        "wires": [
+            [
+                "91d13ffe7fbe64ad",
+                "f30d2538a4dfbc73"
+            ]
+        ]
+    },
+    {
+        "id": "91d13ffe7fbe64ad",
+        "type": "debug",
+        "z": "58a7b027e50b089e",
+        "name": "debug 120",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 350,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "f30d2538a4dfbc73",
+        "type": "http response",
+        "z": "58a7b027e50b089e",
+        "name": "http 500",
+        "statusCode": "500",
+        "headers": {},
+        "x": 540,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "ddf88ebf6a3f93a0",
+        "type": "debug",
+        "z": "58a7b027e50b089e",
+        "name": "debug 122",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1110,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "369aa63972dcc24d",
+        "type": "debug",
+        "z": "58a7b027e50b089e",
+        "name": "debug 123",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 850,
+        "y": 380,
+        "wires": []
+    }
+]

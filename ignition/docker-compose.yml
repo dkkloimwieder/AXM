@@ -1,0 +1,21 @@
+services:
+  ignition: 
+    container_name: ignition
+    restart: always
+    image: kcollins/ignition:8.1
+    env_file:
+      - ./.env
+    networks:
+      - ign
+    ports:
+      - 8089:8088
+    volumes:
+      - ignition:/var/lib/ignition/data
+
+networks:
+  ign:
+    external: true
+    name: tsdb
+
+volumes:
+  ignition:

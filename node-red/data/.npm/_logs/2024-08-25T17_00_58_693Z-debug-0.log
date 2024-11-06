@@ -1,0 +1,24 @@
+0 verbose cli /usr/local/bin/node /usr/local/bin/npm
+1 info using npm@10.7.0
+2 info using node@v20.15.1
+3 silly config:load:file:/usr/local/lib/node_modules/npm/npmrc
+4 silly config:load:file:/data/.npmrc
+5 silly config:load:file:/usr/src/node-red/.npmrc
+6 silly config:load:file:/usr/local/etc/npmrc
+7 verbose title npm install autana-jsonata-transform@2.0.2
+8 verbose argv "install" "--no-audit" "--no-update-notifier" "--no-fund" "--save" "--save-prefix" "~" "--omit" "dev" "--engine-strict" "autana-jsonata-transform@2.0.2"
+9 verbose logfile logs-max:10 dir:/data/.npm/_logs/2024-08-25T17_00_58_693Z-
+10 verbose logfile /data/.npm/_logs/2024-08-25T17_00_58_693Z-debug-0.log
+11 silly logfile start cleaning logs, removing 1 files
+12 silly logfile done cleaning log files
+13 silly idealTree buildDeps
+14 silly fetch manifest autana-jsonata-transform@2.0.2
+15 verbose shrinkwrap failed to load node_modules/.package-lock.json out of date, updated: node_modules/node-red-contrib-graphql
+16 http fetch GET 200 https://registry.npmjs.org/autana-jsonata-transform 543ms (cache miss)
+17 silly placeDep ROOT autana-jsonata-transform@2.0.2 OK for: node-red-project@0.0.1 want: 2.0.2
+18 silly reify moves {}
+19 silly tarball no local data for autana-jsonata-transform@https://registry.npmjs.org/autana-jsonata-transform/-/autana-jsonata-transform-2.0.2.tgz. Extracting by manifest.
+20 http fetch GET 200 https://registry.npmjs.org/autana-jsonata-transform/-/autana-jsonata-transform-2.0.2.tgz 362ms (cache miss)
+21 silly ADD node_modules/autana-jsonata-transform
+22 verbose exit 0
+23 info ok

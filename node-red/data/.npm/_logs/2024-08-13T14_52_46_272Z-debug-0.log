@@ -1,0 +1,73 @@
+0 verbose cli /usr/local/bin/node /usr/local/bin/npm
+1 info using npm@10.7.0
+2 info using node@v20.15.1
+3 silly config:load:file:/usr/local/lib/node_modules/npm/npmrc
+4 silly config:load:file:/data/.npmrc
+5 silly config:load:file:/usr/src/node-red/.npmrc
+6 silly config:load:file:/usr/local/etc/npmrc
+7 verbose title npm install undici
+8 verbose argv "install" "--omit" "dev" "--engine-strict" "undici"
+9 verbose logfile logs-max:10 dir:/data/.npm/_logs/2024-08-13T14_52_46_272Z-
+10 verbose logfile /data/.npm/_logs/2024-08-13T14_52_46_272Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly idealTree buildDeps
+13 silly fetch manifest undici@*
+14 http fetch GET 200 https://registry.npmjs.org/undici 171ms (cache revalidated)
+15 silly placeDep ROOT undici@6.19.7 OK for: node-red-project@0.0.1 want: *
+16 silly reify moves {}
+17 silly audit bulk request {
+17 silly audit   'agent-base': [ '6.0.2' ],
+17 silly audit   asynckit: [ '0.4.0' ],
+17 silly audit   axios: [ '1.2.6' ],
+17 silly audit   'call-bind': [ '1.0.7' ],
+17 silly audit   'combined-stream': [ '1.0.8' ],
+17 silly audit   debug: [ '4.3.6' ],
+17 silly audit   'define-data-property': [ '1.1.4' ],
+17 silly audit   'delayed-stream': [ '1.0.0' ],
+17 silly audit   'es-define-property': [ '1.0.0' ],
+17 silly audit   'es-errors': [ '1.3.0' ],
+17 silly audit   'follow-redirects': [ '1.15.6' ],
+17 silly audit   'form-data': [ '4.0.0' ],
+17 silly audit   'function-bind': [ '1.1.2' ],
+17 silly audit   'get-intrinsic': [ '1.2.4' ],
+17 silly audit   gopd: [ '1.0.1' ],
+17 silly audit   'has-property-descriptors': [ '1.0.2' ],
+17 silly audit   'has-proto': [ '1.0.3' ],
+17 silly audit   'has-symbols': [ '1.0.3' ],
+17 silly audit   hasown: [ '2.0.2' ],
+17 silly audit   'https-proxy-agent': [ '5.0.1' ],
+17 silly audit   'mime-db': [ '1.52.0' ],
+17 silly audit   'mime-types': [ '2.1.35' ],
+17 silly audit   ms: [ '2.1.2' ],
+17 silly audit   mustache: [ '4.2.0' ],
+17 silly audit   'node-red-contrib-graphql': [ '2.1.2' ],
+17 silly audit   'node-red-contrib-ignition-nodes': [ '1.5.17' ],
+17 silly audit   'object-inspect': [ '1.13.2' ],
+17 silly audit   'proxy-from-env': [ '1.1.0' ],
+17 silly audit   punycode: [ '1.4.1' ],
+17 silly audit   qs: [ '6.13.0' ],
+17 silly audit   'set-function-length': [ '1.2.2' ],
+17 silly audit   'side-channel': [ '1.0.6' ],
+17 silly audit   url: [ '0.11.4' ],
+17 silly audit   ws: [ '7.5.10' ],
+17 silly audit   undici: [ '6.19.7' ]
+17 silly audit }
+18 http fetch POST 200 https://registry.npmjs.org/-/npm/v1/security/advisories/bulk 102ms
+19 silly audit report {
+19 silly audit report   axios: [
+19 silly audit report     {
+19 silly audit report       id: 1097680,
+19 silly audit report       url: 'https://github.com/advisories/GHSA-wf5p-g6vw-rhxx',
+19 silly audit report       title: 'Axios Cross-Site Request Forgery Vulnerability',
+19 silly audit report       severity: 'moderate',
+19 silly audit report       vulnerable_versions: '>=1.0.0 <1.6.0',
+19 silly audit report       cwe: [Array],
+19 silly audit report       cvss: [Object]
+19 silly audit report     }
+19 silly audit report   ]
+19 silly audit report }
+20 http fetch GET 200 https://registry.npmjs.org/axios 38ms (cache revalidated)
+21 http fetch GET 200 https://registry.npmjs.org/node-red-contrib-graphql 250ms (cache miss)
+22 silly ADD node_modules/undici
+23 verbose exit 0
+24 info ok

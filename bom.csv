@@ -1,0 +1,5 @@
+name,routing,assembly,component,quantity,operation,sequence,workstation,rate
+BOM-Z-000,R-Z-000,Z-000,X-000,2,LATHE,1,WS-001,21
+BOM-Z-000,R-Z-000,Z-000,X-001,1,LATHE,1,WS-001,21
+BOM-Z-000,R-Z-000,Z-000,,,QC,2,WS-002,40
+

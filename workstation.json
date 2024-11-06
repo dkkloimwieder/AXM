@@ -1,0 +1,23 @@
+{
+  "data": {
+    "name": "PRESS",
+    "owner": "Administrator",
+    "creation": "2024-07-29 12:04:24.285131",
+    "modified": "2024-08-01 11:21:59.174502",
+    "modified_by": "Administrator",
+    "docstatus": 0,
+    "idx": 32,
+    "workstation_name": "PRESS",
+    "workstation_type": "MACHINE",
+    "production_capacity": 1,
+    "status": "Off",
+    "hour_rate_electricity": 2.45,
+    "hour_rate_consumable": 0.1,
+    "hour_rate_rent": 0.55,
+    "hour_rate_labour": 25.0,
+    "hour_rate": 28.1,
+    "total_working_hours": 0.0,
+    "doctype": "Workstation",
+    "working_hours": []
+  }
+}

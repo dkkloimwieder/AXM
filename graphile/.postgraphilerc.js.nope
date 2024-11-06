@@ -1,0 +1,8 @@
+module.exports = {
+	options: {
+
+		graphileBuildOptions: {
+			pgOmitListSuffix: true
+		}
+	}
+}

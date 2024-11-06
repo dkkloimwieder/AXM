@@ -1,0 +1,18 @@
+services:
+  node-red:
+    image: nodered/node-red:latest
+    container_name: ign-node-red
+    environment:
+      ERP_AUTH: "token 4752f9f4fe401db:a63671d32050761"
+    networks:
+      - ignition
+    restart: always
+    ports:
+      - "1880:1880"
+    volumes:
+      - ./data:/data
+
+networks:
+  ignition:
+    external: true
+    name: ignition

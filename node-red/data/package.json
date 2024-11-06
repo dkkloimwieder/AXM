@@ -1,0 +1,12 @@
+{
+    "name": "node-red-project",
+    "description": "A Node-RED Project",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "autana-jsonata-transform": "~2.0.2",
+        "node-red-contrib-graphql": "^2.2.0",
+        "node-red-contrib-ignition-nodes": "^1.5.17",
+        "undici": "^6.19.7"
+    }
+}

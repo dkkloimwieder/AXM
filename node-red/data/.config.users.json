@@ -1,0 +1,49 @@
+{
+    "_": {
+        "editor": {
+            "view": {
+                "view-store-zoom": false,
+                "view-store-position": false,
+                "view-show-grid": true,
+                "view-snap-grid": true,
+                "view-grid-size": "20",
+                "view-node-status": true,
+                "view-node-show-label": true,
+                "view-show-tips": true,
+                "view-show-welcome-tours": true
+            },
+            "tours": {
+                "welcome": "4.0.2"
+            },
+            "dialog": {
+                "export": {
+                    "pretty": true,
+                    "json-view": false
+                }
+            }
+        },
+        "debug": {
+            "filter": "filterCurrent",
+            "filteredNodes": [
+                "f0dcd6ec857eab32",
+                "d637c781c5627d35",
+                "92ea8c66da86893b",
+                "ee83851b711bd7f5",
+                "6b895ec9093a7114",
+                "302f7f3cb5a022e1",
+                "fb813a46cba3d3ba",
+                "55b756d93aae352f",
+                "3453973e5bba287a",
+                "c5d2e0863051225e",
+                "495309245dfc4a47",
+                "d20786f59245d116",
+                "0057f44cd87cf090",
+                "62a5460fccb04df9",
+                "6b8e84b8016d0723",
+                "5032bf577ad27094",
+                "9dad5098cf2ee37b"
+            ]
+        },
+        "menu-menu-item-sidebar": true
+    }
+}

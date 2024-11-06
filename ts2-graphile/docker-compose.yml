@@ -1,0 +1,19 @@
+services:
+  graphql: 
+    container_name: ts2-graphile
+    restart: always
+    image: graphile
+    build:
+      context: ./graphql
+    env_file:
+      - ./.env
+    networks:
+      - ts2
+    ports:
+      - 59999:5999
+    command: ["--connection", "${DATABASE_URL}", "--port", "5999", "--schema", "public", "--append-plugins", "@graphile-contrib/pg-simplify-inflector,postgraphile-plugin-connection-filter,graphile-upsert-plugin", "--watch", "--allow-explain", "--enhance-graphiql", "--dynamic-json"]
+
+networks:
+  ts2:
+    external: true
+    name: ts2

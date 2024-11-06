@@ -1,0 +1,597 @@
+{
+  "name": "MES",
+  "tagType": "Folder",
+  "tags": [
+    {
+      "name": "MaintenanceRecords",
+      "tagType": "UdtType",
+      "tags": [
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "MaintenanceID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "DateTime",
+          "name": "ActualDate",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "TechnicianID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "String",
+          "name": "MaintenanceType",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "DateTime",
+          "name": "ScheduledDate",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Float4",
+          "name": "Duration",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        }
+      ]
+    },
+    {
+      "name": "QualityControl",
+      "tagType": "UdtType",
+      "tags": [
+        {
+          "valueSource": "memory",
+          "dataType": "String",
+          "name": "InspectionResult",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "OrderID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "DateTime",
+          "name": "InspectionDate",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "InspectionID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "String",
+          "name": "CorrectiveAction",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "InspectorID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "DefectID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        }
+      ]
+    },
+    {
+      "name": "BOM",
+      "tagType": "UdtType",
+      "tags": [
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "MaterialID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "String",
+          "name": "UnitOfMeasure",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "RevisionNumber",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "BOMID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "ProductID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "DateTime",
+          "name": "EffectiveDate",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Float4",
+          "name": "QuantityRequired",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        }
+      ]
+    },
+    {
+      "name": "DowntimeEvents",
+      "tagType": "UdtType",
+      "tags": [
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "DowntimeID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "DateTime",
+          "name": "StartTime",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "WorkCenterID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "DateTime",
+          "name": "EndTime",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "DowntimeReasonID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Float4",
+          "name": "Duration",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        }
+      ]
+    },
+    {
+      "name": "Operators",
+      "tagType": "UdtType",
+      "tags": [
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "WorkCenterID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "String",
+          "name": "Skills",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "ShiftID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "String",
+          "name": "Name",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "OperatorID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        }
+      ]
+    },
+    {
+      "name": "InventoryManagement",
+      "tagType": "UdtType",
+      "tags": [
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "LocationID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "LeadTime",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Float4",
+          "name": "ReorderLevel",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "InventoryID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "MaterialID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Float4",
+          "name": "QuantityOnHand",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        }
+      ]
+    },
+    {
+      "name": "PerformanceTracking",
+      "tagType": "UdtType",
+      "tags": [
+        {
+          "valueSource": "memory",
+          "dataType": "DateTime",
+          "name": "EndTime",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Float4",
+          "name": "UnitsProduced",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "OrderID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Float4",
+          "name": "UnitsRejected",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Float4",
+          "name": "OEE",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "DateTime",
+          "name": "StartTime",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "WorkCenterID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "PerformanceID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        }
+      ]
+    },
+    {
+      "name": "Defects",
+      "tagType": "UdtType",
+      "tags": [
+        {
+          "valueSource": "memory",
+          "dataType": "String",
+          "name": "CorrectiveAction",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "String",
+          "name": "DefectDescription",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "DefectID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "OrderID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "String",
+          "name": "RootCause",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Float4",
+          "name": "QuantityAffected",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "String",
+          "name": "DefectCode",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        }
+      ]
+    },
+    {
+      "name": "ProductionOrders",
+      "tagType": "UdtType",
+      "tags": [
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "OrderID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "String",
+          "name": "Status",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "DateTime",
+          "name": "PlannedStartDate",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Float4",
+          "name": "QuantityOrdered",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "DateTime",
+          "name": "ActualStartDate",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Float4",
+          "name": "QuantityCompleted",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "DateTime",
+          "name": "PlannedEndDate",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "String",
+          "name": "WorkOrderNumber",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "ProductID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "DateTime",
+          "name": "ActualEndDate",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        }
+      ]
+    },
+    {
+      "name": "Routing",
+      "tagType": "UdtType",
+      "tags": [
+        {
+          "valueSource": "memory",
+          "dataType": "Float4",
+          "name": "RunTimePerUnit",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "ProductID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "OperationSequence",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "String",
+          "name": "ToolingRequirements",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "OperatorSkillLevel",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "WorkCenterID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "String",
+          "name": "OperationDescription",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Float4",
+          "name": "SetupTime",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "RoutingID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        }
+      ]
+    },
+    {
+      "name": "ShiftSchedules",
+      "tagType": "UdtType",
+      "tags": [
+        {
+          "valueSource": "memory",
+          "dataType": "DateTime",
+          "name": "EndTime",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "ShiftScheduleID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "Int4",
+          "name": "ShiftID",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        },
+        {
+          "valueSource": "memory",
+          "dataType": "DateTime",
+          "name": "StartTime",
+          "historyEnabled": true,
+          "tagType": "AtomicTag"
+        }
+      ]
+    }
+  ]
+}

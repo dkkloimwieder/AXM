@@ -1,0 +1,16 @@
+{
+    "undici": {
+        "spec": "undici",
+        "module": "undici",
+        "subpath": "",
+        "builtin": false,
+        "known": false
+    },
+    "graphql-request": {
+        "spec": "graphql-request",
+        "module": "graphql-request",
+        "subpath": "",
+        "builtin": false,
+        "known": false
+    }
+}
