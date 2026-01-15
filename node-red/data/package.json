@@ -7,6 +7,6 @@
         "autana-jsonata-transform": "~2.0.2",
         "node-red-contrib-graphql": "^2.2.0",
         "node-red-contrib-ignition-nodes": "^1.5.17",
-        "undici": "^6.21.1"
+        "undici": "^6.23.0"
     }
 }
